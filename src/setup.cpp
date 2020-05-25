@@ -1,5 +1,5 @@
 #include "setup.h"
-#include "wio-terminal/ei_device_wio_terminal.h"
+#include "ingestion-sdk-platform/wio-terminal/ei_device_wio_terminal.h"
 #include "repl/at_cmd_repl_freertos.h"
 static AtCmdRepl repl(ei_get_serial());
 
