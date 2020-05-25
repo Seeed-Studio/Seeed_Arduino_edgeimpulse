@@ -29,14 +29,11 @@
 #include <sys/time.h>
 #include <vector>
 #include <functional>
-#include "Seeed_Arduino_FreeRTOS.h"
 #include "thread.hpp"
 #include "ticks.hpp"
 
 using namespace cpp_freertos;
 
-#define ei_get_serial_byte Serial.read
-#define ei_get_serial_available Serial.available
 
 using namespace std;
 
@@ -355,18 +352,11 @@ private:
 
     void callback_irq()
     {
-#ifdef ARDUINO
         while (ei_get_serial_available() > 0)
         {
             rx_callback(ei_get_serial_byte());
         }
-#else
-        if (pc->readable())
-        {
-            char c = pc->getc();
-            //queue->call(callback(this, &Repl::rx_callback), c);
-        }
-#endif
+
     }
 
     void handleBackspace()

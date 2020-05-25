@@ -73,9 +73,10 @@ public:
      */
     bool exec_command(const char *cmd)
     {
+
         if (strlen(cmd) > 255)
         {
-            Serial.printf("Command is too long (max. length 255)\n");
+            ei_printf("Command is too long (max. length 255)\n");
             return true;
         }
 
