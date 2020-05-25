@@ -1,4 +1,4 @@
-# Seeed Arduino edgeimpluse 
+# Seeed Arduino edgeimpulse 
 
 ## Introduction
 
@@ -20,14 +20,14 @@ https://files.seeedstudio.com/arduino/package_seeeduino_boards_index.json
 ## Building the application
 - Download project
 ```shell
-$ git clone https://github.com/Seeed-Studio/Seeed_Arduino_edgeimpulse edgeimpluse
+$ git clone https://github.com/Seeed-Studio/Seeed_Arduino_edgeimpulse edge-impulse
 ```
 - Arduino CLI 
 ```shell
-$ arduino-cli compile  --warnings all --fqbn Seeeduino:samd:seeed_wio_terminal --verbose  edgeimpluse.ino 
+$ arduino-cli compile  --warnings all --fqbn Seeeduino:samd:seeed_wio_terminal --verbose  edge-impulse.ino 
 ```
 - Arduino IDE
-    - open edgeimplus.ino
+    - open edge-implus.ino
     - compile & upload
 
 ## AT Reference
