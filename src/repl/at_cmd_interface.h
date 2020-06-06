@@ -238,9 +238,9 @@ static void ei_at_cmd_exec(ei_at_cmd_t cmd, char *args[10]) {
 bool ei_at_cmd_handle(const char *cmd_in) {
     // copy buffer
     char *cmd = (char*)calloc(strlen(cmd_in) + 1, 1);
-    //Serial.printf("cmd in: %s %d pointer: %X\r\n", cmd_in, strlen(cmd_in), cmd);
+    //ei_printf("cmd in: %s %d pointer: %X\r\n", cmd_in, strlen(cmd_in), cmd);
     memcpy(cmd, cmd_in, strlen(cmd_in));
-//Serial.printf("cmd handle: %s %d\r\n", cmd, strlen(cmd));
+//ei_printf("cmd handle: %s %d\r\n", cmd, strlen(cmd));
     // strip \r\n or spaces at the end...
     for (int ix = strlen(cmd) - 1; ix >= 0; ix--) {
         if (cmd[ix] == '\r' || cmd[ix] == '\n' || cmd[ix] == ' ') {
@@ -261,7 +261,7 @@ bool ei_at_cmd_handle(const char *cmd_in) {
 
     // now do some command parsing...
     if (strlen(cmd) < 4 || cmd[0] != 'A' || cmd[1] != 'T' || cmd[2] != '+') {
-        Serial.printf("Not a valid AT command (%s)\n", cmd);
+        ei_printf("Not a valid AT command (%s)\n", cmd);
         goto clear_up;
     }
 
@@ -321,7 +321,7 @@ bool ei_at_cmd_handle(const char *cmd_in) {
     // alright, arg_count is always > 0 because the strlen check on cmd earlier, but double-check
     // just in case someone changes that code
     if (arg_count == 0) {
-        Serial.printf("Not a valid AT command (%s)\n", cmd);
+        ei_printf("Not a valid AT command (%s)\n", cmd);
         goto clear_up;
     }
 
@@ -345,7 +345,7 @@ bool ei_at_cmd_handle(const char *cmd_in) {
     // handled = handle_at_command(args, arg_count);
 
     if (!handled) {
-        Serial.printf("No handler for AT command (%s)\n", cmd);
+        ei_printf("No handler for AT command (%s)\n", cmd);
         goto clear_up;
     }
 
@@ -362,5 +362,4 @@ clear_up:
 
     return true;
 }
-
 #endif // _EDGE_IMPULSE_AT_COMMANDS_H_
