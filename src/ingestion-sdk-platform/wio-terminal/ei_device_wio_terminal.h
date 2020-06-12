@@ -52,6 +52,8 @@ public:
 	bool get_wifi_present_status();
 	bool get_sensor_list(const ei_device_sensor_t **sensor_list, size_t *sensor_list_size);
 
+    void printd_device_id();
+
 	c_callback get_id_function(void);
 	c_callback get_type_function(void);
 	c_callback_status get_wifi_connection_status_function(void);

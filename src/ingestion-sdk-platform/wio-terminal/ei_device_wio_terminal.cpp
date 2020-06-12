@@ -26,6 +26,9 @@
 #include <stdio.h>
 #include "Arduino.h"
 /* Constants --------------------------------------------------------------- */
+/** Memory location for the arduino device address */
+#define DEVICE_ID_LSB_ADDR  ((uint32_t)0x008061FC)
+#define DEVICE_ID_MSB_ADDR  ((uint32_t)0x00806010)
 
 /** Max size for device id array */
 #define DEVICE_ID_MAX_SIZE  32
@@ -63,7 +66,7 @@ EiDeviceWioTerminal::EiDeviceWioTerminal(void)
     // uint32_t *id_msb = (uint32_t *)DEVICE_ID_MSB_ADDR;
     // uint32_t *id_lsb = (uint32_t *)DEVICE_ID_LSB_ADDR;
 
-    // /* Setup device ID */
+    /* Setup device ID */
     // snprintf(&ei_device_id[0], DEVICE_ID_MAX_SIZE, "%02X:%02X:%02X:%02X:%02X:%02X"
     //     ,(*id_msb >> 8) & 0xFF
     //     ,(*id_msb >> 0) & 0xFF
@@ -72,8 +75,13 @@ EiDeviceWioTerminal::EiDeviceWioTerminal(void)
     //     ,(*id_lsb >> 8) & 0xFF
     //     ,(*id_lsb >> 0) & 0xFF
     //     );
+    snprintf(&ei_device_id[0], DEVICE_ID_MAX_SIZE, "C4:7F:51:94:4A:38");
+
 }
 
+void EiDeviceWioTerminal::printd_device_id(){
+    Serial.println(ei_device_id);
+}
 /**
  * @brief      For the device ID, the BLE mac address is used.
  *             The mac address string is copied to the out_buffer.
@@ -228,7 +236,20 @@ void ei_printf(const char *format, ...) {
         Serial.write(print_buf);
     }
 }
+extern "C"{
+    void cm_printf(const char *format, ...) {
+        char print_buf[1024] = { 0 };
 
+        va_list args;
+        va_start(args, format);
+        int r = vsnprintf(print_buf, sizeof(print_buf), format, args);
+        va_end(args);
+
+        if (r > 0) {
+            Serial.write(print_buf);
+        }
+    }    
+}
 /**
  * @brief      Write serial data with length to Serial output
  *
