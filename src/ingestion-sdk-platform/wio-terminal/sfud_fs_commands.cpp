@@ -24,6 +24,7 @@
 #include "sfud_fs_commands.h"
 
 #include "sfud.h"
+#include "Arduino.h"
 //#include "setup.h"
 
 /* Private types & constants ---------------------------------------------- */
@@ -42,6 +43,7 @@ typedef struct
 	uint32_t config_file_address;			/*!< Start address of config file*/
 	uint32_t sample_start_address;			/*!< Start of sample storage mem */
 	bool     fs_init;						/*!< FS is successfully init  	 */
+    const sfud_flash *flash;
 	
 }ei_sfud_fs_t;
 
@@ -62,7 +64,19 @@ static ei_sfud_fs_t sfud_fs = {0};
  */
 bool ei_sfud_fs_init(void)
 {
-	return true;
+    char ret;
+    ret = sfud_init();
+    
+    #ifdef SFUD_USING_QSPI
+    sfud_qspi_fast_read_enable(sfud_get_device(SFUD_W25Q32_DEVICE_INDEX), 4);
+    #endif 
+
+    sfud_fs.flash  = sfud_get_device_table() + 0;
+    sfud_fs.fs_init = true;
+
+    sfud_fs.config_file_address = 0;
+    sfud_fs.sample_start_address  =  64;
+	return ret == SFUD_FS_CMD_OK;
 }
 
 /**
@@ -75,7 +89,22 @@ bool ei_sfud_fs_init(void)
  */
 int ei_sfud_fs_load_config(uint32_t *config, uint32_t config_size)
 {
-	return (int)SFUD_FS_CMD_OK;	
+
+	char ret;
+
+	if(config == NULL) {
+		ret = SFUD_FS_CMD_NULL_POINTER;
+	}
+
+	else if(sfud_fs.fs_init == true) {
+        ret = (sfud_read(sfud_fs.flash, sfud_fs.config_file_address, config_size, (uint8_t *)config) == SFUD_SUCCESS)		
+            ? SFUD_FS_CMD_OK
+			: SFUD_FS_CMD_READ_ERROR;
+	}
+	else {
+		ret = SFUD_FS_CMD_NOT_INIT;
+	}
+	return (int)ret;	
 }
 
 /**
@@ -88,36 +117,128 @@ int ei_sfud_fs_load_config(uint32_t *config, uint32_t config_size)
  */
 int ei_sfud_fs_save_config(const uint32_t *config, uint32_t config_size)
 {
-	return (int)SFUD_FS_CMD_OK;	
+	char ret;
+	
+	if(config == NULL) {
+		ret = SFUD_FS_CMD_NULL_POINTER;
+	}
+
+	else if(sfud_fs.fs_init == true) {
+        ret = (sfud_erase(sfud_fs.flash, sfud_fs.config_file_address, config_size )== SFUD_SUCCESS)
+			? SFUD_FS_CMD_OK
+			: SFUD_FS_CMD_ERASE_ERROR;
+
+		if(ret == SFUD_FS_CMD_OK) {
+            ret  = (sfud_write(sfud_fs.flash,sfud_fs.config_file_address,config_size ,(const uint8_t* )config) == SFUD_SUCCESS)
+				? SFUD_FS_CMD_OK
+				: SFUD_FS_CMD_WRITE_ERROR;
+            sfud_fs.sample_start_address  = sfud_fs.config_file_address + config_size + 64;
+		}
+		else {
+			ret = SFUD_FS_CMD_ERASE_ERROR;
+		}
+	}
+	else {
+		ret = SFUD_FS_CMD_NOT_INIT;
+	}
+
+	return (int)ret;
 }
 
 int ei_sfud_fs_prepare_sampling(void)
 {
-	return (int)SFUD_FS_CMD_OK;	
+	char ret;
+	if(sfud_fs.fs_init == true) {
+        // ret = (sfud_erase(sfud_fs.flash, sfud_fs.config_file_address, config_size )== SFUD_SUCCESS)
+		// 	? SFUD_FS_CMD_OK
+		// 	: SFUD_FS_CMD_ERASE_ERROR;
+	}
+	else {
+		ret = SFUD_FS_CMD_NOT_INIT;
+	}
+
+	return ret;
 }
 
 int ei_sfud_fs_erase_sampledata(uint32_t start_block, uint32_t end_address)
 {
-	return (int)SFUD_FS_CMD_OK;	
-}
+	char ret;
+
+	if(sfud_fs.fs_init == true) {
+        // ret = (sfud_erase(sfud_fs.flash, sfud_fs.sample_start_address, end_address )== SFUD_SUCCESS)
+		// 	? SFUD_FS_CMD_OK
+		// 	: SFUD_FS_CMD_ERASE_ERROR;
+	}
+	else {
+		ret = SFUD_FS_CMD_NOT_INIT;
+	}
+
+	return ret;	}
 
 int ei_sfud_fs_write_sample_block(const void *sample_buffer, uint32_t address_offset)
 {
-	return (int)SFUD_FS_CMD_OK;	
-}
+	char ret;
+
+	if(sample_buffer == NULL) {
+		ret = SFUD_FS_CMD_NULL_POINTER;
+	}
+	else if (sfud_fs.fs_init == true) {
+        // ret  = (sfud_write(sfud_fs.flash,sfud_fs.sample_start_address, address_offset ,(const uint8_t* )sample_buffer) == SFUD_SUCCESS)
+		// 		? SFUD_FS_CMD_OK
+		// 		: SFUD_FS_CMD_WRITE_ERROR;
+	}
+	else {
+		ret = SFUD_FS_CMD_NOT_INIT;
+	}
+
+	return ret;}
 
 int ei_sfud_fs_write_samples(const void *sample_buffer, uint32_t address_offset, uint32_t n_samples)
 {
-	return (int)SFUD_FS_CMD_OK;	
+	int ret;
+
+	if(sample_buffer == NULL) {
+		ret = SFUD_FS_CMD_NULL_POINTER;
+	}
+	else if (sfud_fs.fs_init == true) {
+        // ret  = (sfud_write(sfud_fs.flash,sfud_fs.sample_start_address + address_offset, n_samples ,(const uint8_t* )sample_buffer) == SFUD_SUCCESS)
+		// 		? SFUD_FS_CMD_OK
+		// 		: SFUD_FS_CMD_WRITE_ERROR;
+	}
+	else {
+		ret = SFUD_FS_CMD_NOT_INIT;
+	}
+    return ret;
 }
 
 int ei_sfud_fs_read_sample_data(void *sample_buffer, uint32_t address_offset, uint32_t n_read_bytes)
 {
+	char ret;
+	
+	if(sample_buffer == NULL) {
+		ret = SFUD_FS_CMD_NULL_POINTER;
+	}
+
+	else if(sfud_fs.fs_init == true) {
+
+		// ret = (iap.read((void *)sample_buffer, sfud_fs.sample_start_address + address_offset, n_read_bytes) == 0)
+		// 	? SFUD_FS_CMD_OK
+		// 	: SFUD_FS_CMD_READ_ERROR;
+	}
+	else {
+		ret = SFUD_FS_CMD_NOT_INIT;
+	}	
+
+
 	return 512;
 }
 
 uint32_t ei_sfud_fs_get_n_available_sample_blocks(void)
 {
-	return 256;	
+	uint32_t n_sample_blocks = 0;
+	if(sfud_fs.fs_init == true) {
+		n_sample_blocks = (sfud_fs.config_file_address - sfud_fs.sample_start_address) / sfud_fs.sector_size;
+	}
+	return n_sample_blocks;
 }
 
