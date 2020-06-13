@@ -42,12 +42,14 @@ static bool ei_sfud_fs_read_buffer(size_t begin, size_t length, void(*data_fn)(u
     return true;
 
 }
-
+static ei_config_ctx_t config_ctx = { 0 };
 
 void ei_main() {
     ei_printf("Edge Impulse standalone inferencing (FreeRTOS)\n");
+    
+    ei_sfud_fs_init();
 
-    ei_config_ctx_t config_ctx = { 0 };
+    // ei_config_ctx_t config_ctx = { 0 }; //会出现段错误，why ?
     config_ctx.get_device_id = EiDevice.get_id_function();
     config_ctx.get_device_type = EiDevice.get_type_function();
     config_ctx.list_files = NULL;
@@ -66,7 +68,6 @@ void ei_main() {
     else {
         ei_printf("Loaded configuration\n");
     }
-    EiDevice.printd_device_id();
     ei_at_register_generic_cmds();
 
     repl.start_repl();
