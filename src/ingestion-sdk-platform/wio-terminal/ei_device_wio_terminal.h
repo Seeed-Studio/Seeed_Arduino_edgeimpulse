@@ -25,6 +25,9 @@
 
 /* Include ----------------------------------------------------------------- */
 #include "ei_device_info.h"
+#include "ei_inertialsensor.h"
+#include "ei_microphone.h"
+#include "sfud_fs_commands.h"
 
 /** Number of sensors used */
 #define EI_DEVICE_N_SENSORS		2
@@ -52,7 +55,6 @@ public:
 	bool get_wifi_present_status();
 	bool get_sensor_list(const ei_device_sensor_t **sensor_list, size_t *sensor_list_size);
 
-    void printd_device_id();
 
 	c_callback get_id_function(void);
 	c_callback get_type_function(void);
