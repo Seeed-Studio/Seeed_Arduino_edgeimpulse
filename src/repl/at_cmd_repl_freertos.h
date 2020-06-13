@@ -154,7 +154,8 @@ private:
                 // }
                 // Serial.printf(", length: %d\n\r", nums);
                 // signal to other thread
-                ei_at_cmd_handle((const char *)&buff);
+                
+                ei_at_cmd_handle((const char *)&buff, nums);
    
                 if (!_terminate_thread)
                 {

@@ -235,12 +235,12 @@ static void ei_at_cmd_exec(ei_at_cmd_t cmd, char *args[10]) {
  * @param cmd_in Line to be interpreted
  * @returns true if handled, false if not handled
  */
-bool ei_at_cmd_handle(const char *cmd_in) {
+bool ei_at_cmd_handle(const char *cmd_in, const size_t cmd_size) {
     // copy buffer
-    char *cmd = (char*)calloc(strlen(cmd_in) + 1, 1);
-    //ei_printf("cmd in: %s %d pointer: %X\r\n", cmd_in, strlen(cmd_in), cmd);
-    memcpy(cmd, cmd_in, strlen(cmd_in));
-//ei_printf("cmd handle: %s %d\r\n", cmd, strlen(cmd));
+    char *cmd = (char*)calloc(cmd_size + 1, 1);
+    // ei_printf("cmd in: %s %d pointer: %X\r\n", cmd_in, cmd_size, cmd);
+    memcpy(cmd, cmd_in, cmd_size);
+    // ei_printf("cmd handle: %s %d\r\n", cmd, strlen(cmd));
     // strip \r\n or spaces at the end...
     for (int ix = strlen(cmd) - 1; ix >= 0; ix--) {
         if (cmd[ix] == '\r' || cmd[ix] == '\n' || cmd[ix] == ' ') {
