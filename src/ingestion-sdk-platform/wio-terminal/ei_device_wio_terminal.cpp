@@ -158,7 +158,7 @@ bool EiDeviceWioTerminal::get_sensor_list(const ei_device_sensor_t **sensor_list
 {
     // /* Calculate number of bytes available on flash for sampling, reserve 1 block for header + overhead */
     // uint32_t available_bytes = (ei_nano_fs_get_n_available_sample_blocks()-1) * ei_nano_fs_get_block_size();
-     uint32_t available_bytes = 256;
+     uint32_t available_bytes = ei_sfud_fs_get_n_available_sample_blocks() - 1;
 
     sensors[ACCELEROMETER].name = "Built-in accelerometer";
     sensors[ACCELEROMETER].start_sampling_cb = &ei_inertial_setup_data_sampling;
@@ -166,10 +166,10 @@ bool EiDeviceWioTerminal::get_sensor_list(const ei_device_sensor_t **sensor_list
     sensors[ACCELEROMETER].frequencies[0] = 62.5f;
     sensors[ACCELEROMETER].frequencies[1] = 100.0f;
 
-    sensors[MICROPHONE].name = "Built-in microphone";
-    sensors[MICROPHONE].start_sampling_cb = &ei_microphone_sample_start;
-    sensors[MICROPHONE].max_sample_length_s = available_bytes / (16000 * 2);
-    sensors[MICROPHONE].frequencies[0] = 16000.0f;
+    // sensors[MICROPHONE].name = "Built-in microphone";
+    // sensors[MICROPHONE].start_sampling_cb = &ei_microphone_sample_start;
+    // sensors[MICROPHONE].max_sample_length_s = available_bytes / (16000 * 2);
+    // sensors[MICROPHONE].frequencies[0] = 16000.0f;
 
     *sensor_list      = sensors;
     *sensor_list_size = EI_DEVICE_N_SENSORS;

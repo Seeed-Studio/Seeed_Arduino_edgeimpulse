@@ -30,7 +30,7 @@
 #include "sfud_fs_commands.h"
 
 /** Number of sensors used */
-#define EI_DEVICE_N_SENSORS		2
+#define EI_DEVICE_N_SENSORS		1
 
 /** C Callback types */
 typedef int (*c_callback)(uint8_t out_buffer[32], size_t *out_size);
