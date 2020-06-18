@@ -75,7 +75,7 @@ bool ei_sfud_fs_init(void)
     sfud_fs.fs_init = true;
 
     sfud_fs.config_file_address = 0;
-    sfud_fs.sample_start_address  =  64;
+    sfud_fs.sample_start_address  =  1024;
 	return ret == SFUD_FS_CMD_OK;
 }
 
@@ -122,7 +122,9 @@ int ei_sfud_fs_save_config(const uint32_t *config, uint32_t config_size)
 	if(config == NULL) {
 		ret = SFUD_FS_CMD_NULL_POINTER;
 	}
-
+    if(config_size > sfud_fs.sample_start_address){
+        ret = SFUD_FS_CMD_WRITE_ERROR;
+    }
 	else if(sfud_fs.fs_init == true) {
         ret = (sfud_erase(sfud_fs.flash, sfud_fs.config_file_address, config_size )== SFUD_SUCCESS)
 			? SFUD_FS_CMD_OK
@@ -132,7 +134,6 @@ int ei_sfud_fs_save_config(const uint32_t *config, uint32_t config_size)
             ret  = (sfud_write(sfud_fs.flash,sfud_fs.config_file_address,config_size ,(const uint8_t* )config) == SFUD_SUCCESS)
 				? SFUD_FS_CMD_OK
 				: SFUD_FS_CMD_WRITE_ERROR;
-            sfud_fs.sample_start_address  = sfud_fs.config_file_address + config_size + 64;
 		}
 		else {
 			ret = SFUD_FS_CMD_ERASE_ERROR;
@@ -149,9 +150,9 @@ int ei_sfud_fs_prepare_sampling(void)
 {
 	char ret;
 	if(sfud_fs.fs_init == true) {
-        // ret = (sfud_erase(sfud_fs.flash, sfud_fs.config_file_address, config_size )== SFUD_SUCCESS)
-		// 	? SFUD_FS_CMD_OK
-		// 	: SFUD_FS_CMD_ERASE_ERROR;
+        ret = (sfud_erase(sfud_fs.flash, sfud_fs.sample_start_address, sfud_fs.flash->chip.capacity - sfud_fs.sample_start_address)== SFUD_SUCCESS)
+			? SFUD_FS_CMD_OK
+			: SFUD_FS_CMD_ERASE_ERROR;
 	}
 	else {
 		ret = SFUD_FS_CMD_NOT_INIT;
@@ -165,16 +166,17 @@ int ei_sfud_fs_erase_sampledata(uint32_t start_block, uint32_t end_address)
 	char ret;
 
 	if(sfud_fs.fs_init == true) {
-        // ret = (sfud_erase(sfud_fs.flash, sfud_fs.sample_start_address, end_address )== SFUD_SUCCESS)
-		// 	? SFUD_FS_CMD_OK
-		// 	: SFUD_FS_CMD_ERASE_ERROR;
+        ret = (sfud_erase(sfud_fs.flash, sfud_fs.sample_start_address, end_address - sfud_fs.sample_start_address )== SFUD_SUCCESS)
+			? SFUD_FS_CMD_OK
+			: SFUD_FS_CMD_ERASE_ERROR;
 	}
 	else {
 		ret = SFUD_FS_CMD_NOT_INIT;
 	}
 
-	return ret;	}
-
+	return ret;	
+}
+#if 0
 int ei_sfud_fs_write_sample_block(const void *sample_buffer, uint32_t address_offset)
 {
 	char ret;
@@ -191,7 +193,9 @@ int ei_sfud_fs_write_sample_block(const void *sample_buffer, uint32_t address_of
 		ret = SFUD_FS_CMD_NOT_INIT;
 	}
 
-	return ret;}
+	return ret;
+}
+#endif 
 
 int ei_sfud_fs_write_samples(const void *sample_buffer, uint32_t address_offset, uint32_t n_samples)
 {
@@ -201,9 +205,9 @@ int ei_sfud_fs_write_samples(const void *sample_buffer, uint32_t address_offset,
 		ret = SFUD_FS_CMD_NULL_POINTER;
 	}
 	else if (sfud_fs.fs_init == true) {
-        // ret  = (sfud_write(sfud_fs.flash,sfud_fs.sample_start_address + address_offset, n_samples ,(const uint8_t* )sample_buffer) == SFUD_SUCCESS)
-		// 		? SFUD_FS_CMD_OK
-		// 		: SFUD_FS_CMD_WRITE_ERROR;
+        ret  = (sfud_write(sfud_fs.flash,sfud_fs.sample_start_address + address_offset, n_samples ,(const uint8_t* )sample_buffer) == SFUD_SUCCESS)
+				? SFUD_FS_CMD_OK
+				: SFUD_FS_CMD_WRITE_ERROR;
 	}
 	else {
 		ret = SFUD_FS_CMD_NOT_INIT;
@@ -220,10 +224,9 @@ int ei_sfud_fs_read_sample_data(void *sample_buffer, uint32_t address_offset, ui
 	}
 
 	else if(sfud_fs.fs_init == true) {
-
-		// ret = (iap.read((void *)sample_buffer, sfud_fs.sample_start_address + address_offset, n_read_bytes) == 0)
-		// 	? SFUD_FS_CMD_OK
-		// 	: SFUD_FS_CMD_READ_ERROR;
+        ret = (sfud_read(sfud_fs.flash, sfud_fs.sample_start_address + address_offset, n_read_bytes, (uint8_t *)sample_buffer) == SFUD_SUCCESS)	
+			? SFUD_FS_CMD_OK
+			: SFUD_FS_CMD_READ_ERROR;
 	}
 	else {
 		ret = SFUD_FS_CMD_NOT_INIT;
@@ -235,10 +238,6 @@ int ei_sfud_fs_read_sample_data(void *sample_buffer, uint32_t address_offset, ui
 
 uint32_t ei_sfud_fs_get_n_available_sample_blocks(void)
 {
-	uint32_t n_sample_blocks = 0;
-	if(sfud_fs.fs_init == true) {
-		n_sample_blocks = (sfud_fs.config_file_address - sfud_fs.sample_start_address) / sfud_fs.sector_size;
-	}
-	return n_sample_blocks;
+	return sfud_fs.flash->chip.capacity ;
 }
 
