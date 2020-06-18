@@ -22,12 +22,46 @@
 
 #ifndef _EI_SAMPLER_H
 #define _EI_SAMPLER_H
-
+#include <Seeed_Arduino_ooFreeRTOS.h>
+#include "thread.hpp"
+#include "ticks.hpp"
 
 /** ei sampler callback function, call with sample data */
 typedef bool (*sampler_callback)(const void *sample_buf, uint32_t byteLenght);
+typedef bool (*sampler_read_data)();
 
 /* Function prototypes ----------------------------------------------------- */
 bool ei_sampler_start_sampling(void *v_ptr_payload, uint32_t sample_size);
+
+using namespace cpp_freertos;
+
+class ai_sampler_thread : public Thread
+{
+public:
+    ai_sampler_thread()
+        : Thread(8*1024, 3)
+    {
+    }
+    void init(sampler_read_data arg_read_data,int arg_delayInSeconds){
+        DelayInSeconds = arg_delayInSeconds;
+        // cb_sampler = arg_callsampler;
+        // callsampler = arg_callsampler;
+        read_data = arg_read_data;        
+    }
+protected:
+  virtual void Run() {
+    while (true) {
+        if(read_data()) break;
+        Delay(Ticks::SecondsToTicks(DelayInSeconds));  
+    }
+  }
+
+
+private:
+  int DelayInSeconds;
+//   sampler_callback callsampler;
+  sampler_read_data read_data;
+};
+
 
 #endif

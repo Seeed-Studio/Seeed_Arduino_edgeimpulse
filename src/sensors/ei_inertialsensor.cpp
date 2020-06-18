@@ -6,17 +6,16 @@
 #include "ei_inertialsensor.h"
 
 #include "ei_config_types.h"
-// #include "nano_fs_commands.h"
 
 // #include <Arduino_LSM9DS1.h>
-// #include "mbed.h"
 
-// #include "ei_device_nano_ble33.h"
+#include "ei_device_wio_terminal.h"
 #include "sensor_aq.h"
 
-// using namespace mbed;
-// using namespace rtos;
-// using namespace events;
+#include "LIS3DHTR.h"
+#include <Wire.h>
+LIS3DHTR<TwoWire> LIS; //IIC
+
 
 
 /* Constant defines -------------------------------------------------------- */
@@ -27,61 +26,39 @@ extern void ei_printf(const char *format, ...);
 extern ei_config_t *ei_config_get_config();
 extern EI_CONFIG_ERROR ei_config_set_sample_interval(float interval);
 
-// Thread inertion_thread;
-// EventQueue intertion_queue;
-// Ticker sample_rate;
 
-// sampler_callback  cb_sampler;
+extern sampler_callback  cb_sampler;
 
 static float imu_data[N_AXIS_SAMPLED];
 
 bool ei_inertial_init(void)
 {   
-    #if 0
-	if (!IMU.begin()) {
-		ei_printf("Failed to initialize IMU!\r\n");    
-	}	
-	else
-		ei_printf("IMU initialized\r\n");
-    #endif
+    LIS.begin(Wire, LIS3DHTR_ADDRESS_UPDATED); //IIC init
+    delay(100);
+    LIS.setOutputDataRate(LIS3DHTR_DATARATE_50HZ);    
 }
 
-void ei_inertial_read_data(void)
+bool ei_inertial_read_data()
 {		
-    #if 0
-	if (IMU.accelerationAvailable()) {
-	    IMU.readAcceleration(imu_data[0], imu_data[1], imu_data[2]);
-
-        imu_data[0] *= CONVERT_G_TO_MS2;
-        imu_data[1] *= CONVERT_G_TO_MS2;
-        imu_data[2] *= CONVERT_G_TO_MS2;
-	}
-
-    #if(N_AXIS_SAMPLED == 6)
-    if (IMU.gyroscopeAvailable()) {
-        IMU.readGyroscope(imu_data[3], imu_data[4], imu_data[5]);
-    }
-    #endif	
+    LIS.getAcceleration(&imu_data[0],&imu_data[1],&imu_data[2]);
 
 	if(cb_sampler((const void *)&imu_data[0], SIZEOF_N_AXIS_SAMPLED))
-		sample_rate.detach();
-    #endif
+		return 1;
+    return 0;   
 }
 
-bool ei_inertial_sample_start(sampler_callback callsampler, float sample_interval_ms)
-{
-    #if 0
-	cb_sampler = callsampler;
+// bool ei_inertial_sample_start(sampler_callback callsampler, float sample_interval_ms)
+// {
+// 	cb_sampler = callsampler;
 
-    inertion_thread.start(callback(&intertion_queue, &EventQueue::dispatch_forever));
-    sample_rate.attach(intertion_queue.event(&ei_inertial_read_data), (sample_interval_ms / 1000.f));	
-    #endif
-    return true;
-}
+//     inertion_thread.start(callback(&intertion_queue, &EventQueue::dispatch_forever));
+//     sample_rate.attach(intertion_queue.event(&ei_inertial_read_data), (sample_interval_ms / 1000.f));	
+//     return true;
+// }
 
 bool ei_inertial_setup_data_sampling(void)
 {
-    #if 0
+
     if (ei_config_get_config()->sample_interval_ms < 10.0f) {
         ei_config_set_sample_interval(10.0f);
     }
@@ -99,5 +76,4 @@ bool ei_inertial_setup_data_sampling(void)
     };	
     
     ei_sampler_start_sampling(&payload, SIZEOF_N_AXIS_SAMPLED);
-    #endif 
 }

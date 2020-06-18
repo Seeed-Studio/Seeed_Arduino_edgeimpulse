@@ -23,20 +23,20 @@
 /* Include ----------------------------------------------------------------- */
 #include <stdint.h>
 #include <stdlib.h>
-
 #include "ei_sampler.h"
 #include "ei_config_types.h"
 #include "sensor_aq.h"
-// #include "nano_fs_commands.h"
-
-// #include "mbed.h"
-// #include "sensor_aq_mbedtls_hs256.h"
 
 
-// using namespace mbed;
-// using namespace rtos;
-// using namespace events;
+#include "sfud_fs_commands.h"
 
+#include "sensor_aq_mbedtls_hs256.h"
+
+#include "ei_inertialsensor.h"
+
+ai_sampler_thread sampler_thread;
+
+sampler_callback  cb_sampler;
 
 /** @todo Should be called by function pointer */
 extern bool ei_inertial_sample_start(sampler_callback callback, float sample_interval_ms);
@@ -55,22 +55,18 @@ static uint32_t headerOffset = 0;
 static char write_word_buf[4];
 static int write_addr = 0;
 
+
 static size_t ei_write(const void *buffer, size_t size, size_t count, EI_SENSOR_AQ_STREAM*)
 {
-    #if 0
     for(int i=0; i<count; i++) {
 
         write_word_buf[write_addr&0x3] = *((char *)buffer++);
 
         if((++write_addr & 0x03) == 0x00) {
-            ei_nano_fs_write_samples(write_word_buf, (write_addr - 4) + headerOffset, 4);
+            ei_sfud_fs_write_samples(write_word_buf, (write_addr - 4) + headerOffset, 4);
         }
-
     }
-
     return count;
-    #endif 
-    return 0;
 }
 
 static int ei_seek(EI_SENSOR_AQ_STREAM*, long int offset, int origin)
@@ -79,33 +75,30 @@ static int ei_seek(EI_SENSOR_AQ_STREAM*, long int offset, int origin)
 }
 
 static unsigned char ei_mic_ctx_buffer[1024];
-// static sensor_aq_signing_ctx_t ei_mic_signing_ctx;
-// static sensor_aq_mbedtls_hs256_ctx_t ei_mic_hs_ctx;
+static sensor_aq_signing_ctx_t ei_mic_signing_ctx;
+static sensor_aq_mbedtls_hs256_ctx_t ei_mic_hs_ctx;
+
 static sensor_aq_ctx ei_mic_ctx = {
-#if 0
     { ei_mic_ctx_buffer, 1024 },
     &ei_mic_signing_ctx,
     &ei_write,
     &ei_seek,
     NULL,
-#endif 
 };
 
 static void ei_write_last_data(void)
 {
-    #if 0
     char fill = (write_addr & 0x03);
     if(fill != 0x00) {
         for(int i=fill; i<4; i++) {
             write_word_buf[i] = 0xFF;
         }
 
-        ei_nano_fs_write_samples(write_word_buf, (write_addr & ~0x03) + headerOffset, 4);
+        ei_sfud_fs_write_samples(write_word_buf, (write_addr & ~0x03) + headerOffset, 4);
     }
-    #endif
 }
 
-// EI_SENSOR_AQ_STREAM stream;
+// EI_SENSOR_AQ_STREAM ei_stream;
 
 
 /* Private function prototypes --------------------------------------------- */
@@ -125,7 +118,6 @@ static bool create_header(sensor_aq_payload_info *payload);
  */
 bool ei_sampler_start_sampling(void *v_ptr_payload, uint32_t sample_size)
 {
-#if 0
     sensor_aq_payload_info *payload = (sensor_aq_payload_info *)v_ptr_payload;
 
     ei_printf("Sampling settings:\n");
@@ -147,30 +139,38 @@ bool ei_sampler_start_sampling(void *v_ptr_payload, uint32_t sample_size)
     current_sample = 0;
 
     // Minimum delay of 2000 ms for daemon
-    if(((sample_buffer_size / ei_nano_fs_get_block_size())+1) * NANO_FS_BLOCK_ERASE_TIME_MS < 2000) {
-        ThisThread::sleep_for(2000 - ((sample_buffer_size / ei_nano_fs_get_block_size())+1) * NANO_FS_BLOCK_ERASE_TIME_MS);
+    //4k block size , 1 block need 30ms
+    if(((sample_buffer_size / 4*1024)+1) * 30 < 2000) {
+        vTaskDelay(Ticks::SecondsToTicks(2));
+        //ThisThread::sleep_for(2000 - ((sample_buffer_size / ei_sfud_fs_get_block_size())+1) * NANO_FS_BLOCK_ERASE_TIME_MS);
         ei_printf("Starting in %lu ms... (or until all flash was erased)\n", 2000);
     }
     else {
         ei_printf("Starting in %lu ms... (or until all flash was erased)\n",
-        ((sample_buffer_size / ei_nano_fs_get_block_size())+1) * NANO_FS_BLOCK_ERASE_TIME_MS);
+        ((sample_buffer_size /4*1024)+1) * 30);
     }
 
-	if(ei_nano_fs_erase_sampledata(0, sample_buffer_size) != NANO_FS_CMD_OK)
+	if(ei_sfud_fs_erase_sampledata(0, sample_buffer_size) != SFUD_FS_CMD_OK)
 		return false;
 
     if(create_header(payload) == false)
         return false;
 
+    cb_sampler = sample_data_callback;
 
-    if(ei_inertial_sample_start(&sample_data_callback, ei_config_get_config()->sample_interval_ms) == false)
-        return false;
+    sampler_thread.init(&ei_inertial_read_data,(ei_config_get_config()->sample_interval_ms / 1000.f));
+    sampler_thread.Start();
+    // if(ei_inertial_sample_start(&sample_data_callback, ei_config_get_config()->sample_interval_ms) == false)
+    //     return false;
 
 	ei_printf("Sampling...\n");
-    while(current_sample < samples_required) {
-        ThisThread::sleep_for(10);
-    };
-
+    // while(current_sample < samples_required) {
+    //     ThisThread::sleep_for(10);
+    // };
+    while(1){
+        vTaskDelay(Ticks::SecondsToTicks(1));
+    }
+#if 0
     ei_write_last_data();
     write_addr++;
 
@@ -184,13 +184,13 @@ bool ei_sampler_start_sampling(void *v_ptr_payload, uint32_t sample_size)
     ctx_err = ei_mic_ctx.signature_ctx->finish(ei_mic_ctx.signature_ctx, ei_mic_ctx.hash_buffer.buffer);
 
     // load the first page in flash...
-    uint8_t *page_buffer = (uint8_t*)malloc(ei_nano_fs_get_block_size());
+    uint8_t *page_buffer = (uint8_t*)malloc(ei_sfud_fs_get_block_size());
     if (!page_buffer) {
         ei_printf("Failed to allocate a page buffer to write the hash\n");
         return false;
     }
 
-    int j = ei_nano_fs_read_sample_data(page_buffer, 0, ei_nano_fs_get_block_size());
+    int j = ei_sfud_fs_read_sample_data(page_buffer, 0, ei_sfud_fs_get_block_size());
     if (j != 0) {
         ei_printf("Failed to read first page (%d)\n", j);
         free(page_buffer);
@@ -216,14 +216,14 @@ bool ei_sampler_start_sampling(void *v_ptr_payload, uint32_t sample_size)
         page_buffer[ei_mic_ctx.signature_index + (hash_ix * 2) + 1] = second_c;
     }
 
-    j = ei_nano_fs_erase_sampledata(0, ei_nano_fs_get_block_size());
+    j = ei_sfud_fs_erase_sampledata(0, ei_sfud_fs_get_block_size());
     if (j != 0) {
         ei_printf("Failed to erase first page (%d)\n", j);
         free(page_buffer);
         return false;
     }
 
-    j = ei_nano_fs_write_samples(page_buffer, 0, ei_nano_fs_get_block_size());
+    j = ei_sfud_fs_write_samples(page_buffer, 0, ei_sfud_fs_get_block_size());
 
     free(page_buffer);
 
@@ -240,7 +240,6 @@ bool ei_sampler_start_sampling(void *v_ptr_payload, uint32_t sample_size)
 
 static bool create_header(sensor_aq_payload_info *payload)
 {
-#if 0
     sensor_aq_init_mbedtls_hs256_context(&ei_mic_signing_ctx, &ei_mic_hs_ctx, ei_config_get_config()->sample_hmac_key);
 
 
@@ -266,18 +265,17 @@ static bool create_header(sensor_aq_payload_info *payload)
     }
 
     // Write to blockdevice
-    tr = ei_nano_fs_write_samples(ei_mic_ctx.cbor_buffer.ptr, 0, end_of_header_ix);
+    tr = ei_sfud_fs_write_samples(ei_mic_ctx.cbor_buffer.ptr, 0, end_of_header_ix);
     ei_printf("Try to write %d bytes\r\n", end_of_header_ix);
     if (tr != 0) {
         ei_printf("Failed to write to header blockdevice (%d)\n", tr);
         return false;
     }
 
-    ei_mic_ctx.stream = &stream;
+    // ei_mic_ctx.stream = &ei_stream;
 
     headerOffset = end_of_header_ix;
     write_addr = 0;
-#endif 
     return true;
 }
 
@@ -289,23 +287,18 @@ static bool create_header(sensor_aq_payload_info *payload)
  */
 static void finish_and_upload(char *filename, uint32_t sample_length_ms)
 {
-#if 0
     ei_printf("Done sampling, total bytes collected: %u\n", samples_required);
 
 
     ei_printf("[1/1] Uploading file to Edge Impulse...\n");
 
-    Timer upload_timer;
-    upload_timer.start();
 
     ei_printf("Not uploading file, not connected to WiFi. Used buffer, from=%lu, to=%lu.\n", 0, write_addr + headerOffset);//sample_buffer_size + headerOffset);
 
 
-    upload_timer.stop();
-    ei_printf("[1/1] Uploading file to Edge Impulse OK (took %d ms.)\n", upload_timer.read_ms());
+    ei_printf("[1/1] Uploading file to Edge Impulse OK (took %d ms.)\n", 3);
 
     ei_printf("OK\n");
-#endif 
 }
 
 /**
@@ -318,7 +311,6 @@ static void finish_and_upload(char *filename, uint32_t sample_length_ms)
  */
 static bool sample_data_callback(const void *sample_buf, uint32_t byteLenght)
 {
-    #if 0
     sensor_aq_add_data(&ei_mic_ctx, (float *)sample_buf, byteLenght / sizeof(float));
 
     if(++current_sample > samples_required) {
@@ -327,6 +319,5 @@ static bool sample_data_callback(const void *sample_buf, uint32_t byteLenght)
     else {
         return false;
     }
-    #endif 
     return true;
 }

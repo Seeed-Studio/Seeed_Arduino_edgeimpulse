@@ -15,5 +15,6 @@ typedef float sample_format_t;
 bool ei_inertial_init(void);
 bool ei_inertial_sample_start(sampler_callback callback, float sample_interval_ms);
 bool ei_inertial_setup_data_sampling(void);
+bool ei_inertial_read_data();
 
 #endif
