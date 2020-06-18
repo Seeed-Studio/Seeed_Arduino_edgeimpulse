@@ -29,12 +29,12 @@
 
 //#include <string.h>
 #include "sensor_aq.h"
-// #include "mbedtls/md.h"
-// #include "mbedtls/sha256.h"
+#include "mbedtls/md.h"
+#include "mbedtls/sha256.h"
 // #include "mbed_trace.h"
 // #include "ei_mbedtls_md.h"
 
-#ifdef MBEDTLS_MD_C
+// #ifdef MBEDTLS_MD_C
 
 typedef struct {
     mbedtls_md_context_t md_ctx;
@@ -50,10 +50,10 @@ typedef struct {
  */
 void sensor_aq_init_mbedtls_hs256_context(sensor_aq_signing_ctx_t *aq_ctx, sensor_aq_mbedtls_hs256_ctx_t *hs_ctx, const char *hmac_key);
 
-#else
+// #else
 
-// #error "sensor_aq_mbedtls_hs256 loaded but Mbed TLS was not found, or MBEDTLS_MD_C was disabled"
+// // #error "sensor_aq_mbedtls_hs256 loaded but Mbed TLS was not found, or MBEDTLS_MD_C was disabled"
 
-#endif // MBEDTLS_MD_C
+// #endif // MBEDTLS_MD_C
 
 #endif // _EDGE_IMPULSE_SIGNING_MBEDTLS_HMAC_SHA256_H_

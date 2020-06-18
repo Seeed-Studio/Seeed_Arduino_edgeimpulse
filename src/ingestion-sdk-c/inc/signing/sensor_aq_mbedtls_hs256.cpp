@@ -29,22 +29,21 @@
 
 #include <string.h>
 #include "sensor_aq.h"
-// #include "mbedtls/md.h"
-// #include "mbedtls/sha256.h"
+#include "mbedtls/md.h"
+#include "mbedtls/sha256.h"
 // #include "mbed_trace.h"
-// #include "ei_mbedtls_md.h"
+#include "ei_mbedtls_md.h"
 
 //#ifdef MBEDTLS_MD_C
 
 extern void ei_printf(const char *format, ...);
 
 typedef struct {
-    //mbedtls_md_context_t md_ctx;
+    mbedtls_md_context_t md_ctx;
     char hmac_key[33];
 } sensor_aq_mbedtls_hs256_ctx_t;
 
 static int sensor_aq_mbedtls_hs256_init(sensor_aq_signing_ctx_t *aq_ctx) {
-    #if 0
     sensor_aq_mbedtls_hs256_ctx_t *hs_ctx = (sensor_aq_mbedtls_hs256_ctx_t*)aq_ctx->ctx;
 
     int err;
@@ -58,28 +57,20 @@ static int sensor_aq_mbedtls_hs256_init(sensor_aq_signing_ctx_t *aq_ctx) {
     }
 
     return ei_mbedtls_md_hmac_starts(&hs_ctx->md_ctx, (const unsigned char *)hs_ctx->hmac_key, strlen(hs_ctx->hmac_key));
-    #endif
-    return 0;
 }
 
 static int sensor_aq_mbedtls_hs256_update(sensor_aq_signing_ctx_t *aq_ctx, const uint8_t *buffer, size_t buffer_size) {
-    #if 0
     sensor_aq_mbedtls_hs256_ctx_t *hs_ctx = (sensor_aq_mbedtls_hs256_ctx_t*)aq_ctx->ctx;
 
     return ei_mbedtls_md_hmac_update(&hs_ctx->md_ctx, buffer, buffer_size);
-    #endif
-    return 0;
 }
 
 static int sensor_aq_mbedtls_hs256_finish(sensor_aq_signing_ctx_t *aq_ctx, uint8_t *buffer) {
-    #if 0
     sensor_aq_mbedtls_hs256_ctx_t *hs_ctx = (sensor_aq_mbedtls_hs256_ctx_t*)aq_ctx->ctx;
 
     int ret = ei_mbedtls_md_hmac_finish(&hs_ctx->md_ctx, buffer);
     mbedtls_md_free(&hs_ctx->md_ctx);
     return ret;
-    #endif
-    return 0;
 }
 
 /**
@@ -90,7 +81,6 @@ static int sensor_aq_mbedtls_hs256_finish(sensor_aq_signing_ctx_t *aq_ctx, uint8
  * @param hmac_key The secret key - **NOTE: this is limited to 32 characters, the rest will be truncated**
  */
 void sensor_aq_init_mbedtls_hs256_context(sensor_aq_signing_ctx_t *aq_ctx, sensor_aq_mbedtls_hs256_ctx_t *hs_ctx, const char *hmac_key) {
-    #if 0
     memcpy(hs_ctx->hmac_key, hmac_key, 32);
     hs_ctx->hmac_key[32] = 0;
 
@@ -105,7 +95,6 @@ void sensor_aq_init_mbedtls_hs256_context(sensor_aq_signing_ctx_t *aq_ctx, senso
     aq_ctx->set_protected = NULL;
     aq_ctx->update = &sensor_aq_mbedtls_hs256_update;
     aq_ctx->finish = &sensor_aq_mbedtls_hs256_finish;
-    #endif
 }
 
 // #else
