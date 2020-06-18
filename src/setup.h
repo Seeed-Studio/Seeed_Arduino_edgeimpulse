@@ -24,6 +24,7 @@
 #define _EI_ARDUINO_WIO_TERMINAL_SETUP_H_
 #include "Seeed_Arduino_FreeRTOS.h"
 #include "Seeed_Arduino_ooFreeRTOS.h"
+#include "Seeed_mbedtls.h"
 #include "task.h"
 #include "thread.hpp"
 #include "ticks.hpp"

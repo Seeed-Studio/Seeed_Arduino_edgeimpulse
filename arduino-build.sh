@@ -14,7 +14,7 @@ INCLUDE+=" -I ./src/sensors"
 INCLUDE+=" -I ./src/QCBOR/inc"
 INCLUDE+=" -I ./src/QCBOR/src"
 INCLUDE+=" -I ./src/cm_backtrace"
-# INCLUDE+=" -I ./src/mbedtls_hmac_sha256_sw/"
+INCLUDE+=" -I ./src/mbedtls_hmac_sha256_sw/"
 
 
 FLAGS+=" -O3"
