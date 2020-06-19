@@ -29,19 +29,18 @@ extern EI_CONFIG_ERROR ei_config_set_sample_interval(float interval);
 
 extern sampler_callback  cb_sampler;
 
-static float imu_data[N_AXIS_SAMPLED];
+static float imu_data[N_AXIS_SAMPLED] = { 0};
 
 bool ei_inertial_init(void)
 {   
-    LIS.begin(Wire, LIS3DHTR_ADDRESS_UPDATED); //IIC init
+    LIS.begin(Wire1); //IIC init
     delay(100);
-    LIS.setOutputDataRate(LIS3DHTR_DATARATE_50HZ);    
+    LIS.setOutputDataRate(LIS3DHTR_DATARATE_400HZ);    
 }
 
 bool ei_inertial_read_data()
 {		
     LIS.getAcceleration(&imu_data[0],&imu_data[1],&imu_data[2]);
-
 	if(cb_sampler((const void *)&imu_data[0], SIZEOF_N_AXIS_SAMPLED))
 		return 1;
     return 0;   
