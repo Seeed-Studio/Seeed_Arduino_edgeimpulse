@@ -51,7 +51,7 @@ int ei_sfud_fs_erase_sampledata(uint32_t start_block, uint32_t end_address);
 int ei_sfud_fs_write_samples(const void *sample_buffer, uint32_t address_offset, uint32_t n_samples);
 int ei_sfud_fs_read_sample_data(void *sample_buffer, uint32_t address_offset, uint32_t n_read_bytes);
 
-// uint32_t ei_sfud_fs_get_block_size(void);
+uint32_t ei_sfud_fs_get_block_size(void);
 uint32_t ei_sfud_fs_get_n_available_sample_blocks(void);
 
 #endif

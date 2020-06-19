@@ -231,9 +231,7 @@ int ei_sfud_fs_read_sample_data(void *sample_buffer, uint32_t address_offset, ui
 	else {
 		ret = SFUD_FS_CMD_NOT_INIT;
 	}	
-
-
-	return 512;
+	return ret;
 }
 
 uint32_t ei_sfud_fs_get_n_available_sample_blocks(void)
@@ -241,3 +239,6 @@ uint32_t ei_sfud_fs_get_n_available_sample_blocks(void)
 	return sfud_fs.flash->chip.capacity ;
 }
 
+uint32_t ei_sfud_fs_get_block_size(void){
+    return 4*1024;
+}
