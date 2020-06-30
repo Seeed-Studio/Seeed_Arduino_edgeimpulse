@@ -110,9 +110,6 @@ public:
         //     _cmd_thread->start(callback(this, &AtCmdRepl::cmd_thread_main));
         // }
 
-        // and command is handled, restart REPL
-        std::function<bool(const char *)> callback = std::bind(&AtCmdRepl::exec_command, this, placeholders::_1);
-        _repl.start(callback);
 
         _terminate_thread = false;
         return false; // don't reprint state (already done when starting the repl again)
@@ -156,7 +153,10 @@ private:
                 // signal to other thread
                 
                 ei_at_cmd_handle((const char *)&buff, nums);
-   
+                // and command is handled, restart REPL
+                std::function<bool(const char *)> callback = std::bind(&AtCmdRepl::exec_command, this, placeholders::_1);
+                _repl.start(callback);
+  
                 if (!_terminate_thread)
                 {
                     // so this shouldn't be an issue I'd say but release'ing this again
