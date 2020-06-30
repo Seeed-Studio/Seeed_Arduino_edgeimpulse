@@ -68,7 +68,7 @@ bool ei_sfud_fs_init(void)
     ret = sfud_init();
     
     #ifdef SFUD_USING_QSPI
-    sfud_qspi_fast_read_enable(sfud_get_device(SFUD_W25Q32_DEVICE_INDEX), 4);
+    sfud_qspi_fast_read_enable(sfud_get_device(SFUD_W25Q32_DEVICE_INDEX), 2);
     #endif 
 
     sfud_fs.flash  = sfud_get_device_table() + 0;
@@ -166,7 +166,7 @@ int ei_sfud_fs_erase_sampledata(uint32_t start_block, uint32_t end_address)
 	char ret;
 
 	if(sfud_fs.fs_init == true) {
-        ret = (sfud_erase(sfud_fs.flash, sfud_fs.sample_start_address, end_address - sfud_fs.sample_start_address )== SFUD_SUCCESS)
+        ret = (sfud_erase(sfud_fs.flash, sfud_fs.sample_start_address, end_address + sfud_fs.sample_start_address )== SFUD_SUCCESS)
 			? SFUD_FS_CMD_OK
 			: SFUD_FS_CMD_ERASE_ERROR;
 	}
@@ -205,6 +205,13 @@ int ei_sfud_fs_write_samples(const void *sample_buffer, uint32_t address_offset,
 		ret = SFUD_FS_CMD_NULL_POINTER;
 	}
 	else if (sfud_fs.fs_init == true) {
+        // ret = (sfud_erase(sfud_fs.flash, sfud_fs.sample_start_address + address_offset, sfud_fs.sample_start_address + address_offset + n_samples )== SFUD_SUCCESS)
+		// 	? SFUD_FS_CMD_OK
+		// 	: SFUD_FS_CMD_ERASE_ERROR;
+
+        // if(ret == SFUD_FS_CMD_ERASE_ERROR) return SFUD_FS_CMD_ERASE_ERROR;
+
+
         ret  = (sfud_write(sfud_fs.flash,sfud_fs.sample_start_address + address_offset, n_samples ,(const uint8_t* )sample_buffer) == SFUD_SUCCESS)
 				? SFUD_FS_CMD_OK
 				: SFUD_FS_CMD_WRITE_ERROR;
