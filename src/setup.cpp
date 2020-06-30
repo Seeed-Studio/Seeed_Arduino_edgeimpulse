@@ -2,6 +2,8 @@
 #include "ingestion-sdk-platform/wio-terminal/ei_device_wio_terminal.h"
 #include "repl/at_cmd_repl_freertos.h"
 #include "sfud_fs_commands.h"
+#include "cm_backtrace.h"
+
 
 #define HARDWARE_VERSION               "seeed_wio_terminal"
 #define SOFTWARE_VERSION               "V0.1.0"
@@ -46,9 +48,10 @@ static ei_config_ctx_t config_ctx = { 0 };
 
 void ei_main() {
     ei_printf("Edge Impulse standalone inferencing (FreeRTOS)\n");
-    
+     cm_backtrace_init("edge-impulse.ino.Seeeduino.samd", HARDWARE_VERSION, SOFTWARE_VERSION);
     ei_sfud_fs_init();
-
+    ei_inertial_init();
+    
     // ei_config_ctx_t config_ctx = { 0 }; //会出现段错误，why ?
     config_ctx.get_device_id = EiDevice.get_id_function();
     config_ctx.get_device_type = EiDevice.get_type_function();
@@ -68,8 +71,12 @@ void ei_main() {
     else {
         ei_printf("Loaded configuration\n");
     }
-    ei_at_register_generic_cmds();
 
+
+    // ei_sfud_fs_write_samples()
+    // ei_sfud_fs_read_sample_data
+
+    ei_at_register_generic_cmds();
     repl.start_repl();
 
     Thread::StartScheduler();

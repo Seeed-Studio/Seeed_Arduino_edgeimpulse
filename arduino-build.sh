@@ -16,10 +16,12 @@ INCLUDE+=" -I ./src/QCBOR/src"
 INCLUDE+=" -I ./src/cm_backtrace"
 INCLUDE+=" -I ./src/mbedtls_hmac_sha256_sw/"
 
+INCLUDE+=" -I ./src/cm_backtrace"
+
 
 FLAGS+=" -O3"
 FLAGS+=" -g3"
-FLAGS+=" -DEI_SENSOR_AQ_STREAM=void"
+FLAGS+=" -DEI_SENSOR_AQ_STREAM=int"
 FLAGS+=" -DEIDSP_QUANTIZE_FILTERBANK=0"
 FLAGS+=" -D__STATIC_FORCEINLINE=__STATIC_INLINE"
 
