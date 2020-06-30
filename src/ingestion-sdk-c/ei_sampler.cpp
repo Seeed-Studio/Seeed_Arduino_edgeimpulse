@@ -36,7 +36,7 @@
 
 ai_sampler_thread sampler_thread;
 
-sampler_callback  cb_sampler;
+// sampler_callback  cb_sampler;
 
 /** @todo Should be called by function pointer */
 extern bool ei_inertial_sample_start(sampler_callback callback, float sample_interval_ms);
@@ -98,7 +98,7 @@ static void ei_write_last_data(void)
     }
 }
 
-// EI_SENSOR_AQ_STREAM ei_stream;
+EI_SENSOR_AQ_STREAM ei_stream;
 
 
 /* Private function prototypes --------------------------------------------- */
@@ -132,6 +132,7 @@ bool ei_sampler_start_sampling(void *v_ptr_payload, uint32_t sample_size)
         return false;
     }
     ei_printf("\tFile name: %s\n", filename);
+    ei_printf("\tsample_size %d\n", sample_size);
 
 
     samples_required = (uint32_t)(((float)ei_config_get_config()->sample_length_ms) / ei_config_get_config()->sample_interval_ms);
@@ -156,9 +157,9 @@ bool ei_sampler_start_sampling(void *v_ptr_payload, uint32_t sample_size)
     if(create_header(payload) == false)
         return false;
 
-    cb_sampler = sample_data_callback;
+    // cb_sampler = sample_data_callback;
 
-    sampler_thread.init(&ei_inertial_read_data,(ei_config_get_config()->sample_interval_ms / 1000.f));
+    sampler_thread.init(&ei_inertial_read_data, &sample_data_callback,(ei_config_get_config()->sample_interval_ms / 1000.f));
     sampler_thread.Start();
     // if(ei_inertial_sample_start(&sample_data_callback, ei_config_get_config()->sample_interval_ms) == false)
     //     return false;
@@ -270,7 +271,7 @@ static bool create_header(sensor_aq_payload_info *payload)
         return false;
     }
 
-    // ei_mic_ctx.stream = &ei_stream;
+    ei_mic_ctx.stream = &ei_stream;
 
     headerOffset = end_of_header_ix;
     write_addr = 0;

@@ -28,7 +28,7 @@
 
 /** ei sampler callback function, call with sample data */
 typedef bool (*sampler_callback)(const void *sample_buf, uint32_t byteLenght);
-typedef bool (*sampler_read_data)();
+typedef bool (*sampler_read_data)(sampler_callback callback);
 
 /* Function prototypes ----------------------------------------------------- */
 bool ei_sampler_start_sampling(void *v_ptr_payload, uint32_t sample_size);
@@ -42,16 +42,16 @@ public:
         : Thread(8*1024, 3)
     {
     }
-    void init(sampler_read_data arg_read_data,int arg_delayInSeconds){
+    void init(sampler_read_data arg_read_data,sampler_callback arg_callsampler,int arg_delayInSeconds){
         DelayInSeconds = arg_delayInSeconds;
-        // cb_sampler = arg_callsampler;
+        cb_sampler = arg_callsampler;
         // callsampler = arg_callsampler;
         read_data = arg_read_data;        
     }
 protected:
   virtual void Run() {
     while (true) {
-        if(read_data()) break;
+        if(read_data(cb_sampler)) break;
         Delay(Ticks::SecondsToTicks(DelayInSeconds));  
     }
   }
@@ -59,7 +59,7 @@ protected:
 
 private:
   int DelayInSeconds;
-//   sampler_callback callsampler;
+  sampler_callback cb_sampler;
   sampler_read_data read_data;
 };
 
