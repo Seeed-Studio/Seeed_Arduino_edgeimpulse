@@ -16,34 +16,37 @@
 #include <Wire.h>
 LIS3DHTR<TwoWire> LIS; //IIC
 
-
-
 /* Constant defines -------------------------------------------------------- */
-#define CONVERT_G_TO_MS2    9.80665f
-
+#define CONVERT_G_TO_MS2 9.80665f
 
 extern void ei_printf(const char *format, ...);
 extern ei_config_t *ei_config_get_config();
 extern EI_CONFIG_ERROR ei_config_set_sample_interval(float interval);
 
-
 // extern sampler_callback  cb_sampler;
 
-static float imu_data[N_AXIS_SAMPLED] = { 0};
+static float imu_data[N_AXIS_SAMPLED] = {0};
 
 bool ei_inertial_init(void)
-{   
+{
     LIS.begin(Wire1); //IIC init
     delay(100);
-    LIS.setOutputDataRate(LIS3DHTR_DATARATE_400HZ);    
+    LIS.setOutputDataRate(LIS3DHTR_DATARATE_400HZ);
 }
 
-bool ei_inertial_read_data(sampler_callback callback )
-{		
-    LIS.getAcceleration(&imu_data[0],&imu_data[1],&imu_data[2]);
-	if(callback((const void *)&imu_data[0], SIZEOF_N_AXIS_SAMPLED))
-		return 1;
-    return 0;   
+bool ei_inertial_read_data(sampler_callback callback)
+{
+
+    if (LIS.available())
+    {
+        LIS.getAcceleration(&imu_data[0], &imu_data[1], &imu_data[2]);
+        imu_data[0] *= CONVERT_G_TO_MS2;
+        imu_data[1] *= CONVERT_G_TO_MS2;
+        imu_data[2] *= CONVERT_G_TO_MS2;
+    }
+    if (callback((const void *)&imu_data[0], SIZEOF_N_AXIS_SAMPLED))
+        return 1;
+    return 0;
 }
 
 // bool ei_inertial_sample_start(sampler_callback callsampler, float sample_interval_ms)
@@ -51,14 +54,15 @@ bool ei_inertial_read_data(sampler_callback callback )
 // 	cb_sampler = callsampler;
 
 //     inertion_thread.start(callback(&intertion_queue, &EventQueue::dispatch_forever));
-//     sample_rate.attach(intertion_queue.event(&ei_inertial_read_data), (sample_interval_ms / 1000.f));	
+//     sample_rate.attach(intertion_queue.event(&ei_inertial_read_data), (sample_interval_ms / 1000.f));
 //     return true;
 // }
 
 bool ei_inertial_setup_data_sampling(void)
 {
 
-    if (ei_config_get_config()->sample_interval_ms < 10.0f) {
+    if (ei_config_get_config()->sample_interval_ms < 10.0f)
+    {
         ei_config_set_sample_interval(10.0f);
     }
 
@@ -70,9 +74,9 @@ bool ei_inertial_setup_data_sampling(void)
         // How often new data is sampled in ms. (100Hz = every 10 ms.)
         ei_config_get_config()->sample_interval_ms,
         // The axes which you'll use. The units field needs to comply to SenML units (see https://www.iana.org/assignments/senml/senml.xhtml)
-        { { "accX", "m/s2" }, { "accY", "m/s2" }, { "accZ", "m/s2" }, 
-        /*{ "gyrX", "dps" }, { "gyrY", "dps" }, { "gyrZ", "dps" } */},        
-    };	
-    
+        {{"accX", "m/s2"}, {"accY", "m/s2"}, {"accZ", "m/s2"},
+         /*{ "gyrX", "dps" }, { "gyrY", "dps" }, { "gyrZ", "dps" } */},
+    };
+
     ei_sampler_start_sampling(&payload, SIZEOF_N_AXIS_SAMPLED);
 }
