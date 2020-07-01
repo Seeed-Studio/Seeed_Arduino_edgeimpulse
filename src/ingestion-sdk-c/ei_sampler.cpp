@@ -168,8 +168,6 @@ bool ei_sampler_start_sampling(void *v_ptr_payload, uint32_t sample_size)
     while(current_sample < samples_required) {
         vTaskDelay(Ticks::SecondsToTicks(1));
     };
-
-
     ei_write_last_data();
     write_addr++;
 
@@ -232,7 +230,7 @@ bool ei_sampler_start_sampling(void *v_ptr_payload, uint32_t sample_size)
     }
 
     finish_and_upload("fd/imu", ei_config_get_config()->sample_length_ms);
- 
+    
     return true;
 }
 

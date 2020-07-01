@@ -56,7 +56,6 @@ protected:
     }
   }
 
-
 private:
   int DelayInSeconds;
   sampler_callback cb_sampler;
