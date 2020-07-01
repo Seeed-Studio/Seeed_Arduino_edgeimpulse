@@ -147,8 +147,7 @@ bool ei_sampler_start_sampling(void *v_ptr_payload, uint32_t sample_size)
         ei_printf("Starting in %lu ms... (or until all flash was erased)\n", 2000);
     }
     else {
-        ei_printf("Starting in %lu ms... (or until all flash was erased)\n",
-        ((sample_buffer_size /4*1024)+1) * 30);
+        ei_printf("Starting in %lu ms... (or until all flash was erased)\n",ei_config_get_config()->sample_length_ms);
     }
 
 	if(ei_sfud_fs_erase_sampledata(0, sample_buffer_size) != SFUD_FS_CMD_OK)

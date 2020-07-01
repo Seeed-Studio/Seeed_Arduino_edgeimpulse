@@ -36,7 +36,7 @@
 #include "ticks.hpp"
 #include "message.hpp"
 #include "semaphore.hpp"
-
+#include "Arduino.h"
 using namespace cpp_freertos;
 
 typedef struct
@@ -48,7 +48,7 @@ class AtCmdRepl : public Thread
 {
 public:
     AtCmdRepl(SerialStream *serial)
-        : Thread(8*1024, 2),
+        : Thread(8 * 1024, 2),
           _repl(serial),
           Mail(256),
           _mail_handled(1),
@@ -87,32 +87,26 @@ public:
         Mail.Send((void *)cmd, strlen(cmd));
 
 
-        // // event was cancelled
-        // if (_terminate_thread) {
-        //     osPriority_t priority = _cmd_thread->get_priority();
-
-        //     // signal the other thread, and wait until it's done
-        //     _cmd_thread->signal_set(EI_SIGNAL_TERMINATE_THREAD_REQ);
-
-        //     for (size_t ix = 0; ix < 10; ix++) {
-        //         ThisThread::sleep_for(200);
-        //         if (_cmd_thread->get_state() != Thread::State::Ready) {
+        // event was cancelled
+        // if (_terminate_thread)
+        // {
+        //     ei_printf("I am here2\n\r");
+        //     for (size_t ix = 0; ix < 10; ix++)
+        //     {
+        //         Delay(Ticks::MsToTicks(200));
+        //         if (eTaskGetState(this->GetHandle()) != eReady)
+        //         {
         //             break;
         //         }
         //     }
 
-        //     _cmd_thread->terminate();
+        //     //this->Cleanup();
+        //     // vTaskDelete(this->GetHandle());
 
-        //     delete _cmd_thread;
-
-        //     // have to restart the thread... have to make new one, because Mbed OS does not allow restarting terminated threads
-        //     _cmd_thread = new Thread(priority, _cmd_thread_stack_size, _cmd_thread_stack_mem, "at-cmd-thread");
-        //     _cmd_thread->start(callback(this, &AtCmdRepl::cmd_thread_main));
+        //     //this->Start();
         // }
-
-
         _terminate_thread = false;
-        return false; // don't reprint state (already done when starting the repl again)
+        return false;
     }
 
     void break_inference_loop_irq()
@@ -120,7 +114,6 @@ public:
         if (_repl.getSerial()->available() && _repl.getSerial()->read() == 'b')
         {
             _terminate_thread = true;
-
             // release the semaphore so the main thread knows the event is done
             _mail_handled.Give();
         }
@@ -151,12 +144,13 @@ private:
                 // }
                 // Serial.printf(", length: %d\n\r", nums);
                 // signal to other thread
-                
+
                 ei_at_cmd_handle((const char *)&buff, nums);
+
                 // and command is handled, restart REPL
                 std::function<bool(const char *)> callback = std::bind(&AtCmdRepl::exec_command, this, placeholders::_1);
                 _repl.start(callback);
-  
+
                 if (!_terminate_thread)
                 {
                     // so this shouldn't be an issue I'd say but release'ing this again
