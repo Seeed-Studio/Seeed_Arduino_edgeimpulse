@@ -158,7 +158,7 @@ bool ei_sampler_start_sampling(void *v_ptr_payload, uint32_t sample_size)
 
     // cb_sampler = sample_data_callback;
 
-    sampler_thread.init(&ei_inertial_read_data, &sample_data_callback,(ei_config_get_config()->sample_interval_ms / 1000.f));
+    sampler_thread.init(&ei_inertial_read_data, &sample_data_callback,(ei_config_get_config()->sample_interval_ms));
     sampler_thread.Start();
     // if(ei_inertial_sample_start(&sample_data_callback, ei_config_get_config()->sample_interval_ms) == false)
     //     return false;

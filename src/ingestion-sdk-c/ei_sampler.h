@@ -42,8 +42,8 @@ public:
         : Thread(8*1024, 3)
     {
     }
-    void init(sampler_read_data arg_read_data,sampler_callback arg_callsampler,int arg_delayInSeconds){
-        DelayInSeconds = arg_delayInSeconds;
+    void init(sampler_read_data arg_read_data,sampler_callback arg_callsampler,int arg_delayInMs){
+        DelayInMs = arg_delayInMs;
         cb_sampler = arg_callsampler;
         // callsampler = arg_callsampler;
         read_data = arg_read_data;        
@@ -52,12 +52,12 @@ protected:
   virtual void Run() {
     while (true) {
         if(read_data(cb_sampler)) break;
-        Delay(Ticks::SecondsToTicks(DelayInSeconds));  
+        Delay(Ticks::MsToTicks(DelayInMs));  
     }
   }
 
 private:
-  int DelayInSeconds;
+  int DelayInMs;
   sampler_callback cb_sampler;
   sampler_read_data read_data;
 };
