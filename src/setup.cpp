@@ -19,7 +19,6 @@ static bool ei_sfud_fs_read_buffer(size_t begin, size_t length, void(*data_fn)(u
 
     size_t pos = begin;
     size_t bytes_left = length;
-
     // we're encoding as base64 in AT+READFILE, so this needs to be divisable by 3
     uint8_t buffer[513];
     while (1) {

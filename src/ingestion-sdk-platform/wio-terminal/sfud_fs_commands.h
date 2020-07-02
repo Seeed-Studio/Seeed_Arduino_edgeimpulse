@@ -46,7 +46,7 @@ int ei_sfud_fs_load_config(uint32_t *config, uint32_t config_size);
 int ei_sfud_fs_save_config(const uint32_t *config, uint32_t config_size);
 
 int ei_sfud_fs_prepare_sampling(void);
-int ei_sfud_fs_erase_sampledata(uint32_t start_block, uint32_t end_address);
+int ei_sfud_fs_erase_sampledata(uint32_t start_block, uint32_t length);
 // int ei_sfud_fs_write_sample_block(const void *sample_buffer, uint32_t address_offset);
 int ei_sfud_fs_write_samples(const void *sample_buffer, uint32_t address_offset, uint32_t n_samples);
 int ei_sfud_fs_read_sample_data(void *sample_buffer, uint32_t address_offset, uint32_t n_read_bytes);

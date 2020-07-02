@@ -73,9 +73,9 @@ bool ei_sfud_fs_init(void)
 
     sfud_fs.flash  = sfud_get_device_table() + 0;
     sfud_fs.fs_init = true;
-
+	sfud_fs.sector_size = ei_sfud_fs_get_block_size();
     sfud_fs.config_file_address = 0;
-    sfud_fs.sample_start_address  =  1024;
+    sfud_fs.sample_start_address  =  1 * ei_sfud_fs_get_block_size();
 	return ret == SFUD_FS_CMD_OK;
 }
 
@@ -161,12 +161,12 @@ int ei_sfud_fs_prepare_sampling(void)
 	return ret;
 }
 
-int ei_sfud_fs_erase_sampledata(uint32_t start_block, uint32_t end_address)
+int ei_sfud_fs_erase_sampledata(uint32_t start_block, uint32_t length)
 {
 	char ret;
-
 	if(sfud_fs.fs_init == true) {
-        ret = (sfud_erase(sfud_fs.flash, sfud_fs.sample_start_address, end_address + sfud_fs.sample_start_address )== SFUD_SUCCESS)
+		uint32_t start_addr = sfud_fs.sample_start_address + start_block * ei_sfud_fs_get_block_size();
+        ret = (sfud_erase(sfud_fs.flash, start_addr, length)== SFUD_SUCCESS)
 			? SFUD_FS_CMD_OK
 			: SFUD_FS_CMD_ERASE_ERROR;
 	}
@@ -205,13 +205,6 @@ int ei_sfud_fs_write_samples(const void *sample_buffer, uint32_t address_offset,
 		ret = SFUD_FS_CMD_NULL_POINTER;
 	}
 	else if (sfud_fs.fs_init == true) {
-        // ret = (sfud_erase(sfud_fs.flash, sfud_fs.sample_start_address + address_offset, sfud_fs.sample_start_address + address_offset + n_samples )== SFUD_SUCCESS)
-		// 	? SFUD_FS_CMD_OK
-		// 	: SFUD_FS_CMD_ERASE_ERROR;
-
-        // if(ret == SFUD_FS_CMD_ERASE_ERROR) return SFUD_FS_CMD_ERASE_ERROR;
-
-
         ret  = (sfud_write(sfud_fs.flash,sfud_fs.sample_start_address + address_offset, n_samples ,(const uint8_t* )sample_buffer) == SFUD_SUCCESS)
 				? SFUD_FS_CMD_OK
 				: SFUD_FS_CMD_WRITE_ERROR;
@@ -225,11 +218,9 @@ int ei_sfud_fs_write_samples(const void *sample_buffer, uint32_t address_offset,
 int ei_sfud_fs_read_sample_data(void *sample_buffer, uint32_t address_offset, uint32_t n_read_bytes)
 {
 	char ret;
-	
 	if(sample_buffer == NULL) {
 		ret = SFUD_FS_CMD_NULL_POINTER;
 	}
-
 	else if(sfud_fs.fs_init == true) {
         ret = (sfud_read(sfud_fs.flash, sfud_fs.sample_start_address + address_offset, n_read_bytes, (uint8_t *)sample_buffer) == SFUD_SUCCESS)	
 			? SFUD_FS_CMD_OK
