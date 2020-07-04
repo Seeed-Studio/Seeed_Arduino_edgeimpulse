@@ -29,7 +29,7 @@
 #include "ei_config.h"
 #include "ei_device_wio_terminal.h"
 
-#define EDGE_IMPULSE_AT_COMMAND_VERSION        "1.3.2"
+#define EDGE_IMPULSE_AT_COMMAND_VERSION        "1.3.3"
 static void at_device_info() {
     uint8_t id_buffer[32] = { 0 };
     size_t id_size;
