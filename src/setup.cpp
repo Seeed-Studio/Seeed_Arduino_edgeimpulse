@@ -2,8 +2,9 @@
 #include "ingestion-sdk-platform/wio-terminal/ei_device_wio_terminal.h"
 #include "repl/at_cmd_repl_freertos.h"
 #include "sfud_fs_commands.h"
+#if CM_DEBUG
 #include "cm_backtrace.h"
-
+#endif
 
 #define HARDWARE_VERSION               "seeed_wio_terminal"
 #define SOFTWARE_VERSION               "V0.1.0"
@@ -47,7 +48,9 @@ static ei_config_ctx_t config_ctx = { 0 };
 
 void ei_main() {
     ei_printf("Edge Impulse standalone inferencing (FreeRTOS)\n");
+    #if CM_DEBUG
      cm_backtrace_init("edge-impulse.ino.Seeeduino.samd", HARDWARE_VERSION, SOFTWARE_VERSION);
+    #endif
     ei_sfud_fs_init();
     ei_inertial_init();
     ei_mutlgas_init();
