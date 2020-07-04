@@ -24,7 +24,7 @@
 #include "setup.h"
 #include "edge-impulse-sdk/classifier/ei_run_classifier.h"
 #include "edge-impulse-sdk/dsp/numpy.hpp"
-#include "ei_microphone.h"
+// #include "ei_microphone.h"
 #include "ei_inertialsensor.h"
 
 
