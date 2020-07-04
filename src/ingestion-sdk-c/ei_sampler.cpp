@@ -116,7 +116,7 @@ static bool create_header(sensor_aq_payload_info *payload);
  *
  * @return     true if successful
  */
-bool ei_sampler_start_sampling(void *v_ptr_payload, uint32_t sample_size)
+bool ei_sampler_start_sampling(sampler_read_data read_data,void *v_ptr_payload, uint32_t sample_size)
 {
     sensor_aq_payload_info *payload = (sensor_aq_payload_info *)v_ptr_payload;
 
@@ -158,7 +158,7 @@ bool ei_sampler_start_sampling(void *v_ptr_payload, uint32_t sample_size)
 
     // cb_sampler = sample_data_callback;
 
-    sampler_thread.init(&ei_inertial_read_data, &sample_data_callback,(ei_config_get_config()->sample_interval_ms));
+    sampler_thread.init(read_data, &sample_data_callback,(ei_config_get_config()->sample_interval_ms));
     sampler_thread.Start();
     // if(ei_inertial_sample_start(&sample_data_callback, ei_config_get_config()->sample_interval_ms) == false)
     //     return false;

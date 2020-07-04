@@ -31,7 +31,7 @@ typedef bool (*sampler_callback)(const void *sample_buf, uint32_t byteLenght);
 typedef bool (*sampler_read_data)(sampler_callback callback);
 
 /* Function prototypes ----------------------------------------------------- */
-bool ei_sampler_start_sampling(void *v_ptr_payload, uint32_t sample_size);
+bool ei_sampler_start_sampling(sampler_read_data read_data,void *v_ptr_payload, uint32_t sample_size);
 
 using namespace cpp_freertos;
 
