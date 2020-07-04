@@ -1,38 +1,28 @@
-# Seeed Arduino edgeimpulse 
-
+# Edge Impulse firmware for Seeed Wio Terminal
+Edge Impulse enables developers to create the next generation of intelligent device solutions with embedded Machine Learning. This repository contains the Edge Impulse firmware for the Seeed Samd Serial development board. This device supports all Edge Impulse device features, including ingestion, remote management and inferencing.
 ## Introduction
 
 ## Requirements
 ### Hardware
-- Seeeduino Wio Terminal
+- [Seeed Wio Terminal](https://www.seeedstudio.com/Wio-Terminal-p-4509.html)
 ### Tools 
-- Arduino CLI
-- Arduino IDE
+The arduino-cli tool is used to build and upload the Edge Impulse firmware to the Seeed Wio terminal board. Use following link for download and installation procedure:
+* [Arduino CLI](https://arduino.github.io/arduino-cli/installation/).
 
-### Boards Manager URL
-```shell
-https://files.seeedstudio.com/arduino/package_seeeduino_boards_index.json
-```
-###  Dependency Library
-- [Seeed_Arduino_FreeRTOS](https://github.com/Seeed-Studio/Seeed_Arduino_FreeRTOS)
-- [Seeed_Arduino_ooFreeRTOS](https://github.com/Seeed-Studio/Seeed_Arduino_ooFreeRTOS)
 
 ## Building the application
-- Download project
+The Edge Impulse firmware depends on libraries and the samd core for Arduino. Running the following script will install all the dependencies for you:
+
 ```shell
-$ git clone https://github.com/Seeed-Studio/Seeed_Arduino_edgeimpulse edge-impulse
+
+cd ~/Arduino/libraries/
+git clone https://github.com/Seeed-Studio/Seeed_Arduino_FreeRTOS
+git clone https://github.com/Seeed-Studio/Seeed_Arduino_ooFreeRTOS
+git clone https://github.com/Seeed-Studio/Seeed_Arduino_LIS3DHTR
+git clone https://github.com/Seeed-Studio/Seeed_Arduino_mbedtls -b edge-impulse
+git clone https://github.com/Seeed-Studio/Seeed_Arduino_MultiGas
+git clone https://github.com/Seeed-Studio/Seeed_Arduino_SFUD
+git clone https://github.com/Seeed-Studio/Seeed_Arduino_edgeimpulse 
+cd  Seeed_Arduino_edgeimpulse 
+./arduino-build.sh --build
 ```
-- Arduino CLI 
-```shell
-$ arduino-cli compile  --warnings all --fqbn Seeeduino:samd:seeed_wio_terminal --verbose  edge-impulse.ino 
-```
-- Arduino IDE
-    - open edge-implus.ino
-    - compile & upload
-
-## AT Reference
-
-
-----
-## License
-
