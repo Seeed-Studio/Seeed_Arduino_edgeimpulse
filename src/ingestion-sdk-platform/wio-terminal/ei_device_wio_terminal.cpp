@@ -37,7 +37,7 @@
 typedef enum
 {
     ACCELEROMETER = 0,
-    MICROPHONE
+    GAS
 
 }used_sensors_t;
 
@@ -164,10 +164,11 @@ bool EiDeviceWioTerminal::get_sensor_list(const ei_device_sensor_t **sensor_list
     sensors[ACCELEROMETER].frequencies[0] = 62.5f;
     sensors[ACCELEROMETER].frequencies[1] = 100.0f;
 
-    // sensors[MICROPHONE].name = "Built-in microphone";
-    // sensors[MICROPHONE].start_sampling_cb = &ei_microphone_sample_start;
-    // sensors[MICROPHONE].max_sample_length_s = available_bytes / (16000 * 2);
-    // sensors[MICROPHONE].frequencies[0] = 16000.0f;
+    sensors[GAS].name = "Built-in multichannel gas";
+    sensors[GAS].start_sampling_cb = &ei_mutlgas_setup_data_sampling;
+    sensors[GAS].max_sample_length_s = available_bytes / (100 * SIZEOF_N_GAS_SAMPLED);
+    sensors[GAS].frequencies[0] = 62.5f;
+    sensors[GAS].frequencies[1] = 100.0f;
 
     *sensor_list      = sensors;
     *sensor_list_size = EI_DEVICE_N_SENSORS;

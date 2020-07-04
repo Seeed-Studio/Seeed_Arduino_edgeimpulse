@@ -78,5 +78,5 @@ bool ei_inertial_setup_data_sampling(void)
          /*{ "gyrX", "dps" }, { "gyrY", "dps" }, { "gyrZ", "dps" } */},
     };
 
-    ei_sampler_start_sampling(&payload, SIZEOF_N_AXIS_SAMPLED);
+    ei_sampler_start_sampling(&ei_inertial_read_data, &payload, SIZEOF_N_AXIS_SAMPLED);
 }
