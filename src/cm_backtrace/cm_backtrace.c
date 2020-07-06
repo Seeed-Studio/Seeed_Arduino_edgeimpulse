@@ -25,7 +25,7 @@
  * Function: Initialize function and other general function.
  * Created on: 2016-12-15
  */
-
+#if CM_DEBUG
 #include <cm_backtrace.h>
 #include <stdbool.h>
 #include <string.h>
@@ -719,3 +719,4 @@ void cm_backtrace_fault(uint32_t fault_handler_lr, uint32_t fault_handler_sp) {
 
     print_call_stack(stack_pointer);
 }
+#endif
