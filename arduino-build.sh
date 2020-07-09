@@ -1,5 +1,5 @@
 #!/bin/bash
-PROJECT=edge-impulse.ino
+PROJECT=Seeed_Arduino_edgeimpulse.ino
 BOARD=Seeeduino:samd:seeed_wio_terminal
 COMMAND=$1
 
