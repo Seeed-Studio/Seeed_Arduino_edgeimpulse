@@ -27,10 +27,11 @@
 #include "ei_device_info.h"
 #include "ei_inertialsensor.h"
 #include "ei_mutlgassensor.h"
+#include "ei_bme280.h"
 #include "sfud_fs_commands.h"
 
 /** Number of sensors used */
-#define EI_DEVICE_N_SENSORS		2
+#define EI_DEVICE_N_SENSORS		3
 
 /** C Callback types */
 typedef int (*c_callback)(uint8_t out_buffer[32], size_t *out_size);
