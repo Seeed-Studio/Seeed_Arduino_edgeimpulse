@@ -165,7 +165,7 @@ bool ei_sampler_start_sampling(sampler_read_data read_data,void *v_ptr_payload, 
 
 	ei_printf("Sampling...\n");
     while(current_sample < samples_required) {
-        vTaskDelay(Ticks::SecondsToTicks(1));
+        vTaskDelay(Ticks::MsToTicks(20));
     };
     ei_write_last_data();
     write_addr++;
