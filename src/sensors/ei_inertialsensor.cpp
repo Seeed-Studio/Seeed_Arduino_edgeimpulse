@@ -31,7 +31,9 @@ bool ei_inertial_init(void)
 {
     LIS.begin(Wire1); //IIC init
     delay(100);
-    LIS.setOutputDataRate(LIS3DHTR_DATARATE_400HZ);
+    LIS.setOutputDataRate(LIS3DHTR_DATARATE_200HZ);
+    LIS.setHighSolution(true); //High solution enable
+    delay(50);
 }
 
 bool ei_inertial_read_data(sampler_callback callback)
