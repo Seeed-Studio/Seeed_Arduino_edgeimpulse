@@ -42,7 +42,8 @@ typedef enum
     ACCELEROMETER = 0,
     GAS,
     BME280,
-    DPS310
+    DPS310,
+    TFMINI
 
 }used_sensors_t;
 
@@ -185,6 +186,12 @@ bool EiDeviceWioTerminal::get_sensor_list(const ei_device_sensor_t **sensor_list
     sensors[DPS310].max_sample_length_s = available_bytes / (100 * SIZEOF_N_PRESSURE_SAMPLED);
     sensors[DPS310].frequencies[0] = 100.0f;
     sensors[DPS310].frequencies[1] = 200.0f;
+
+    sensors[TFMINI].name = "External distance sensor";
+    sensors[TFMINI].start_sampling_cb = &ei_tfmini_setup_data_sampling;
+    sensors[TFMINI].max_sample_length_s = available_bytes / (100 * SIZEOF_N_DISTANCE_SAMPLED);
+    sensors[TFMINI].frequencies[0] = 62.5f;
+    sensors[TFMINI].frequencies[1] = 100.0f;
 
     *sensor_list      = sensors;
     *sensor_list_size = EI_DEVICE_N_SENSORS;
