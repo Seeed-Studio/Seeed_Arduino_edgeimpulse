@@ -33,6 +33,9 @@
 /** Max size for device id array */
 #define DEVICE_ID_MAX_SIZE  32
 
+/** TARGET_NAME **/
+#define TARGET_NAME (const char*)"SEEED_WIO_TERMINAL"
+
 /** Sensors */
 typedef enum
 {
@@ -45,7 +48,7 @@ typedef enum
 #define EDGE_STRINGIZE(x) EDGE_STRINGIZE_(x)
 
 /** Device type */
-static const char *ei_device_type = EDGE_STRINGIZE(TARGET_NAME);
+static const char *ei_device_type = TARGET_NAME;
 
 /** Device id array */
 static char ei_device_id[DEVICE_ID_MAX_SIZE];
