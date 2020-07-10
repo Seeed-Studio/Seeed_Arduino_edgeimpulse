@@ -69,6 +69,7 @@ void ei_main()
     ei_inertial_init();
     ei_mutlgas_init();
     ei_bme280_init();
+    ei_dps310_init();
 
     // ei_config_ctx_t config_ctx = { 0 }; //会出现段错误，why ?
     config_ctx.get_device_id = EiDevice.get_id_function();
