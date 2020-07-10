@@ -20,8 +20,8 @@
  * SOFTWARE.
  */
 
-#ifndef EI_DEVICE_NANO_BLE33
-#define EI_DEVICE_NANO_BLE33
+#ifndef EI_DEVICE_WIO_TERMINAL
+#define EI_DEVICE_WIO_TERMINAL
 
 /* Include ----------------------------------------------------------------- */
 #include "ei_device_info.h"
