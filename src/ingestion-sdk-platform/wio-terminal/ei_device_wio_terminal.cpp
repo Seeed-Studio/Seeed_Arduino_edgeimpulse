@@ -170,8 +170,7 @@ bool EiDeviceWioTerminal::get_sensor_list(const ei_device_sensor_t **sensor_list
     sensors[GAS].name = "External multichannel gas";
     sensors[GAS].start_sampling_cb = &ei_mutlgas_setup_data_sampling;
     sensors[GAS].max_sample_length_s = available_bytes / (100 * SIZEOF_N_GAS_SAMPLED);
-    sensors[GAS].frequencies[0] = 62.5f;
-    sensors[GAS].frequencies[1] = 100.0f;
+    sensors[GAS].frequencies[0] = 100.0f;
 
     *sensor_list      = sensors;
     *sensor_list_size = EI_DEVICE_N_SENSORS;
