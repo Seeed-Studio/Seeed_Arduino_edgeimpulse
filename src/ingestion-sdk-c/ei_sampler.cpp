@@ -157,6 +157,8 @@ bool ei_sampler_start_sampling(sampler_read_data read_data,void *v_ptr_payload, 
         return false;
 
     // cb_sampler = sample_data_callback;
+    //add 2 second delay before starting sampling
+    vTaskDelay(Ticks::MsToTicks(2000));
 
     sampler_thread.init(read_data, &sample_data_callback,(ei_config_get_config()->sample_interval_ms));
     sampler_thread.Start();
