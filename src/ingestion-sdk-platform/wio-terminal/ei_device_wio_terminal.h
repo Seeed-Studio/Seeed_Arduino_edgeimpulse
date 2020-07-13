@@ -30,10 +30,11 @@
 #include "ei_bme280.h"
 #include "ei_dps310.h"
 #include "ei_tfmini.h"
+#include "ei_bmi088.h"
 #include "sfud_fs_commands.h"
 
 /** Number of sensors used */
-#define EI_DEVICE_N_SENSORS		5
+#define EI_DEVICE_N_SENSORS		6
 
 /** C Callback types */
 typedef int (*c_callback)(uint8_t out_buffer[32], size_t *out_size);

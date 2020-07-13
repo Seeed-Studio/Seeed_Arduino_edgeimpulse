@@ -43,7 +43,8 @@ typedef enum
     GAS,
     BME280,
     DPS310,
-    TFMINI
+    TFMINI,
+    BMI088
 
 }used_sensors_t;
 
@@ -192,6 +193,13 @@ bool EiDeviceWioTerminal::get_sensor_list(const ei_device_sensor_t **sensor_list
     sensors[TFMINI].max_sample_length_s = available_bytes / (100 * SIZEOF_N_DISTANCE_SAMPLED);
     sensors[TFMINI].frequencies[0] = 62.5f;
     sensors[TFMINI].frequencies[1] = 100.0f;
+
+    sensors[BMI088].name = "External 6-axis accelerator";
+    sensors[BMI088].start_sampling_cb = &ei_bmi088_setup_data_sampling;
+    sensors[BMI088].max_sample_length_s = available_bytes / (100 * SIZEOF_N_GYRO_SAMPLED);
+    sensors[BMI088].frequencies[0] = 62.5f;
+    sensors[BMI088].frequencies[1] = 100.0f;
+    sensors[BMI088].frequencies[2] = 200.0f;
 
     *sensor_list      = sensors;
     *sensor_list_size = EI_DEVICE_N_SENSORS;

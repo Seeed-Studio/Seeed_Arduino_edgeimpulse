@@ -26,6 +26,7 @@ before_install:
   - installLibrary Seeed-Studio/Grove_BME280
   - installLibrary Seeed-Studio/Seeed_Arduino_DPS310
   - installLibrary Seeed-Studio/Seeed_Arduino_TFlidar
+  - installLibrary Seeed-Studio/Grove_6Axis_Accelerometer_And_Gyroscope_BMI088
   - cd ${HOME}/Arduino/libraries/
   - git clone https://github.com/Seeed-Studio/Seeed_Arduino_mbedtls -b edge-impulse
   - cd ${HOME}/Arduino/libraries/Seeed_Arduino_mbedtls
