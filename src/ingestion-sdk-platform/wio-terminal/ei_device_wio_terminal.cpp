@@ -45,7 +45,8 @@ typedef enum
     DPS310,
     TFMINI,
     BMI088,
-    ULTRASONIC
+    ULTRASONIC,
+    SCD30
 
 }used_sensors_t;
 
@@ -207,6 +208,12 @@ bool EiDeviceWioTerminal::get_sensor_list(const ei_device_sensor_t **sensor_list
     sensors[ULTRASONIC].max_sample_length_s = available_bytes / (100 * SIZEOF_N_ULTRASONIC_SAMPLED);
     sensors[ULTRASONIC].frequencies[0] = 62.5f;
     sensors[ULTRASONIC].frequencies[1] = 100.0f;
+
+    sensors[SCD30].name = "External CO2+Temp sensor(SCD30)";
+    sensors[SCD30].start_sampling_cb = &ei_scd30_setup_data_sampling;
+    sensors[SCD30].max_sample_length_s = available_bytes / (100 * SIZEOF_N_SCD30_SAMPLED);
+    sensors[SCD30].frequencies[0] = 62.5f;
+    sensors[SCD30].frequencies[1] = 100.0f;
 
     *sensor_list      = sensors;
     *sensor_list_size = EI_DEVICE_N_SENSORS;

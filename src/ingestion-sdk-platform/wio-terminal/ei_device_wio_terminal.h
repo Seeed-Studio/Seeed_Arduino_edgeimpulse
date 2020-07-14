@@ -32,10 +32,11 @@
 #include "ei_tfmini.h"
 #include "ei_bmi088.h"
 #include "ei_ultrasonic.h"
+#include "ei_scd30.h"
 #include "sfud_fs_commands.h"
 
 /** Number of sensors used */
-#define EI_DEVICE_N_SENSORS		7
+#define EI_DEVICE_N_SENSORS		8
 
 /** C Callback types */
 typedef int (*c_callback)(uint8_t out_buffer[32], size_t *out_size);
