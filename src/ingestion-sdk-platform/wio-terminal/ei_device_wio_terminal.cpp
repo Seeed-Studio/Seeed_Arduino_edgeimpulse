@@ -44,7 +44,8 @@ typedef enum
     BME280,
     DPS310,
     TFMINI,
-    BMI088
+    BMI088,
+    ULTRASONIC
 
 }used_sensors_t;
 
@@ -200,6 +201,12 @@ bool EiDeviceWioTerminal::get_sensor_list(const ei_device_sensor_t **sensor_list
     sensors[BMI088].frequencies[0] = 62.5f;
     sensors[BMI088].frequencies[1] = 100.0f;
     sensors[BMI088].frequencies[2] = 200.0f;
+
+    sensors[ULTRASONIC].name = "External ultrasonic sensor";
+    sensors[ULTRASONIC].start_sampling_cb = &ei_ultrasonic_setup_data_sampling;
+    sensors[ULTRASONIC].max_sample_length_s = available_bytes / (100 * SIZEOF_N_ULTRASONIC_SAMPLED);
+    sensors[ULTRASONIC].frequencies[0] = 62.5f;
+    sensors[ULTRASONIC].frequencies[1] = 100.0f;
 
     *sensor_list      = sensors;
     *sensor_list_size = EI_DEVICE_N_SENSORS;
