@@ -23,6 +23,8 @@ before_install:
   - installLibrary Seeed-Studio/Seeed_Arduino_LIS3DHTR
   - installLibrary Seeed-Studio/Seeed_Arduino_MultiGas
   - installLibrary Seeed-Studio/Seeed_Arduino_SFUD
+  - installLibrary Seeed-Studio/Grove_BME280
+  - installLibrary Seeed-Studio/Seeed_Arduino_DPS310
   - cd ${HOME}/Arduino/libraries/
   - git clone https://github.com/Seeed-Studio/Seeed_Arduino_mbedtls -b edge-impulse
   - cd ${HOME}/Arduino/libraries/Seeed_Arduino_mbedtls

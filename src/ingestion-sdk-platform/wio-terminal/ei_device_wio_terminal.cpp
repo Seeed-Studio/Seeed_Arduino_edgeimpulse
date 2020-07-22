@@ -42,7 +42,9 @@
 typedef enum
 {
     ACCELEROMETER = 0,
-    GAS
+    GAS,
+    BME280,
+    DPS310
 
 }used_sensors_t;
 
@@ -177,6 +179,18 @@ bool EiDeviceWioTerminal::get_sensor_list(const ei_device_sensor_t **sensor_list
     sensors[GAS].start_sampling_cb = &ei_mutlgas_setup_data_sampling;
     sensors[GAS].max_sample_length_s = available_bytes / (100 * SIZEOF_N_GAS_SAMPLED);
     sensors[GAS].frequencies[0] = 100.0f;
+
+    sensors[BME280].name = "External temperature sensor";
+    sensors[BME280].start_sampling_cb = &ei_bme280_setup_data_sampling;
+    sensors[BME280].max_sample_length_s = available_bytes / (100 * SIZEOF_N_TEMP_SAMPLED);
+    sensors[BME280].frequencies[0] = 62.5f;
+    sensors[BME280].frequencies[1] = 100.0f;
+
+    sensors[DPS310].name = "External pressure sensor";
+    sensors[DPS310].start_sampling_cb = &ei_dps310_setup_data_sampling;
+    sensors[DPS310].max_sample_length_s = available_bytes / (100 * SIZEOF_N_PRESSURE_SAMPLED);
+    sensors[DPS310].frequencies[0] = 100.0f;
+    sensors[DPS310].frequencies[1] = 200.0f;
 
     *sensor_list      = sensors;
     *sensor_list_size = EI_DEVICE_N_SENSORS;
