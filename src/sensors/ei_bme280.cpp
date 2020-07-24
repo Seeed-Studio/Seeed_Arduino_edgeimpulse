@@ -7,14 +7,13 @@
 
 #include "ei_config_types.h"
 
-
 #include "ei_device_wio_terminal.h"
+#include "ei_sensors_utils.h"
 #include "sensor_aq.h"
 
 #include <Seeed_BME280.h>
 #include <Wire.h>
 BME280 bme280;
-
 
 extern void ei_printf(const char *format, ...);
 extern ei_config_t *ei_config_get_config();
@@ -26,16 +25,18 @@ static float temp_data[N_TEMP_SAMPLED] = {0};
 
 bool ei_bme280_init(void)
 {
+    if (!i2c_scanner(0x76))
+        return false;
     bme280.init(); // use the hardware I2C
+    return true;
 }
 
 bool ei_bme280_read_data(sampler_callback callback)
 {
 
-
-    temp_data[0] = bme280.getTemperature(); // Temperature
-    temp_data[1] = (bme280.getPressure())*0.001; // Pressure in kPa
-    temp_data[2] = bme280.getHumidity(); // Humidity
+    temp_data[0] = bme280.getTemperature();        // Temperature
+    temp_data[1] = (bme280.getPressure()) * 0.001; // Pressure in kPa
+    temp_data[2] = bme280.getHumidity();           // Humidity
 
     if (callback((const void *)&temp_data[0], SIZEOF_N_TEMP_SAMPLED))
         return 1;
@@ -60,6 +61,12 @@ bool ei_bme280_setup_data_sampling(void)
         {{"Temp", "C"}, {"Pressure", "kPa"}, {"Humidity", "%"},
          /*{ "gyrX", "dps" }, { "gyrY", "dps" }, { "gyrZ", "dps" } */},
     };
-    
-    ei_sampler_start_sampling(&ei_bme280_read_data,&payload, SIZEOF_N_TEMP_SAMPLED);
+
+    if (!ei_bme280_init())
+    {
+        ei_printf("Sensor initialization failed, Please check that your device is connected properly!\n\r");
+        return false;
+    }
+
+    ei_sampler_start_sampling(&ei_bme280_read_data, &payload, SIZEOF_N_TEMP_SAMPLED);
 }
