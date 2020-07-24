@@ -162,8 +162,6 @@ bool ei_sampler_start_sampling(sampler_read_data read_data,void *v_ptr_payload, 
 
     sampler_thread.init(read_data, &sample_data_callback,(ei_config_get_config()->sample_interval_ms));
     sampler_thread.Start();
-    // if(ei_inertial_sample_start(&sample_data_callback, ei_config_get_config()->sample_interval_ms) == false)
-    //     return false;
 
 	ei_printf("Sampling...\n");
     while(current_sample < samples_required) {

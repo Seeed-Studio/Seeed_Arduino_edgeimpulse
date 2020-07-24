@@ -60,6 +60,6 @@ bool ei_bme280_setup_data_sampling(void)
         {{"Temp", "C"}, {"Pressure", "kPa"}, {"Humidity", "%"},
          /*{ "gyrX", "dps" }, { "gyrY", "dps" }, { "gyrZ", "dps" } */},
     };
-
+    
     ei_sampler_start_sampling(&ei_bme280_read_data,&payload, SIZEOF_N_TEMP_SAMPLED);
 }
