@@ -8,6 +8,7 @@
 #include "ei_config_types.h"
 
 #include "ei_device_wio_terminal.h"
+#include "ei_sensors_utils.h"
 #include "sensor_aq.h"
 
 #include <BMI088.h>
@@ -23,8 +24,11 @@ static float gyro_data[N_GYRO_SAMPLED] = {0};
 bool ei_bmi088_init(void)
 {
     Wire.begin();
+    if (!i2c_scanner(0x19))
+        return false;
     if (bmi088.isConnection()) {
         bmi088.initialize();
+        return true;
     }
 }
 
@@ -56,6 +60,12 @@ bool ei_bmi088_setup_data_sampling(void)
         {{"accX", "m/s2"}, {"accY", "m/s2"}, {"accZ", "m/s2"},{"gyrX", "degrees/s"},{"gyrY", "degrees/s"},{"gyrZ", "degrees/s"},
          /*{ "gyrX", "dps" }, { "gyrY", "dps" }, { "gyrZ", "dps" } */},
     };
+
+    if (!ei_bmi088_init())
+    {
+        ei_printf("Sensor initialization failed, Please check that your device is connected properly!\n\r");
+        return false;
+    }
 
     ei_sampler_start_sampling(&ei_bmi088_read_data,&payload, SIZEOF_N_GYRO_SAMPLED);
 }
