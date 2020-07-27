@@ -9,6 +9,7 @@
 
 
 #include "ei_device_wio_terminal.h"
+#include "ei_sensors_utils.h"
 #include "sensor_aq.h"
 
 #include <SCD30.h>
@@ -23,7 +24,10 @@ static float scd30_data[N_SCD30_SAMPLED] = {0};
 
 bool ei_scd30_init(void)
 {
+    if(!i2c_scanner(0x61))
+        return false;
     scd30.initialize(); // use the hardware I2C
+    return true;
 }
 
 bool ei_scd30_read_data(sampler_callback callback)
@@ -56,6 +60,12 @@ bool ei_scd30_setup_data_sampling(void)
         {{"CO2", "ppm"}, {"Temperature", "C"}, {"Humidity", "%"},
          /*{ "gyrX", "dps" }, { "gyrY", "dps" }, { "gyrZ", "dps" } */},
     };
+
+    if (!ei_scd30_init())
+    {
+        ei_printf("Sensor initialization failed, Please check that your device is connected properly!\n\r");
+        return false;
+    }
 
     ei_sampler_start_sampling(&ei_scd30_read_data,&payload, SIZEOF_N_TEMP_SAMPLED);
 }
