@@ -30,10 +30,13 @@ static float imu_data[N_AXIS_SAMPLED] = {0};
 bool ei_inertial_init(void)
 {
     LIS.begin(Wire1); //IIC init
+    if(!LIS)
+        return false; 
     delay(100);
     LIS.setOutputDataRate(LIS3DHTR_DATARATE_200HZ);
     LIS.setHighSolution(true); //High solution enable
     delay(50);
+    return true;
 }
 
 bool ei_inertial_read_data(sampler_callback callback)
@@ -79,6 +82,12 @@ bool ei_inertial_setup_data_sampling(void)
         {{"accX", "m/s2"}, {"accY", "m/s2"}, {"accZ", "m/s2"},
          /*{ "gyrX", "dps" }, { "gyrY", "dps" }, { "gyrZ", "dps" } */},
     };
+
+    if(!ei_inertial_init())
+    {
+        ei_printf("Sensor initialization failed, Please check that your device is connected properly!\n\r");
+        return false;
+    }
 
     ei_sampler_start_sampling(&ei_inertial_read_data, &payload, SIZEOF_N_AXIS_SAMPLED);
 }

@@ -3,18 +3,17 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include "ei_sensors_utils.h"
 #include "ei_mutlgassensor.h"
 
 #include "ei_config_types.h"
-
 
 #include "ei_device_wio_terminal.h"
 #include "sensor_aq.h"
 
 #include <Multichannel_Gas_GMXXX.h>
 #include <Wire.h>
- GAS_GMXXX<TwoWire> gas;
-
+GAS_GMXXX<TwoWire> gas;
 
 extern void ei_printf(const char *format, ...);
 extern ei_config_t *ei_config_get_config();
@@ -26,12 +25,16 @@ static float gas_data[N_GAS_SAMPLED] = {0};
 
 bool ei_mutlgas_init(void)
 {
+    if(!i2c_scanner(0x08))
+        return false;
+
     gas.begin(Wire, 0x08); // use the hardware I2C
+
+    return true;
 }
 
 bool ei_mutlgas_read_data(sampler_callback callback)
 {
-
 
     gas_data[0] = gas.getGM102B(); // NO2
     gas_data[1] = gas.getGM302B(); // C2H5CH
@@ -58,9 +61,17 @@ bool ei_mutlgas_setup_data_sampling(void)
         EiDevice.get_type_pointer(),
         // How often new data is sampled in ms. (100Hz = every 10 ms.)
         ei_config_get_config()->sample_interval_ms,
-        {{"NO2", "ppm"}, {"C2H5CH", "ppm"}, {"VOC", "ppm"},{"CO", "ppm"},
+        {{"NO2", "ppm"}, {"C2H5CH", "ppm"}, {"VOC", "ppm"}, {"CO", "ppm"},
          /*{ "gyrX", "dps" }, { "gyrY", "dps" }, { "gyrZ", "dps" } */},
     };
 
-    ei_sampler_start_sampling(&ei_mutlgas_read_data,&payload, SIZEOF_N_GAS_SAMPLED);
+    if (!ei_mutlgas_init())
+    {
+        ei_printf("Sensor initialization failed, Please check that your device is connected properly!\n\r");
+        return false;
+    }
+
+    ei_sampler_start_sampling(&ei_mutlgas_read_data, &payload, SIZEOF_N_GAS_SAMPLED);
+
+    return true;
 }

@@ -22,6 +22,8 @@ git clone https://github.com/Seeed-Studio/Seeed_Arduino_LIS3DHTR
 git clone https://github.com/Seeed-Studio/Seeed_Arduino_mbedtls -b edge-impulse
 git clone https://github.com/Seeed-Studio/Seeed_Arduino_MultiGas
 git clone https://github.com/Seeed-Studio/Seeed_Arduino_SFUD
+git clone https://github.com/Seeed-Studio/Grove_BME280
+git clone https://github.com/Seeed-Studio/Seeed_Arduino_DPS310
 git clone https://github.com/Seeed-Studio/Seeed_Arduino_edgeimpulse 
 cd  Seeed_Arduino_edgeimpulse 
 ./arduino-build.sh --build

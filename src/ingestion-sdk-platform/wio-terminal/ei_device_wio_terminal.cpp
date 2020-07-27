@@ -27,8 +27,10 @@
 #include "Arduino.h"
 /* Constants --------------------------------------------------------------- */
 /** Memory location for the arduino device address */
-#define DEVICE_ID_LSB_ADDR  ((uint32_t)0x41002018)
-#define DEVICE_ID_MSB_ADDR  ((uint32_t)0x04)
+#define DEVICE_ID_WORD0  ((uint32_t)0x008061FC)
+#define DEVICE_ID_WORD1  ((uint32_t)0x00806010)
+#define DEVICE_ID_WORD2  ((uint32_t)0x00806014)
+#define DEVICE_ID_WORD3  ((uint32_t)0x00806018)
 
 /** Max size for device id array */
 #define DEVICE_ID_MAX_SIZE  32
@@ -72,16 +74,20 @@ static bool get_wifi_present_status_c(void);
 
 EiDeviceWioTerminal::EiDeviceWioTerminal(void)
 {
-    uint32_t *id_msb = (uint32_t *)DEVICE_ID_MSB_ADDR;
-    uint32_t *id_lsb = (uint32_t *)DEVICE_ID_LSB_ADDR;
+    uint32_t *id_word0 = (uint32_t *)DEVICE_ID_WORD0;
+    uint32_t *id_word1 = (uint32_t *)DEVICE_ID_WORD1;
+    uint32_t *id_word2 = (uint32_t *)DEVICE_ID_WORD2;
+    uint32_t *id_word3 = (uint32_t *)DEVICE_ID_WORD3;
+
+    /* Setup device ID */
     /* Setup device ID */
     snprintf(&ei_device_id[0], DEVICE_ID_MAX_SIZE, "%02X:%02X:%02X:%02X:%02X:%02X"
-        ,(*id_msb >> 8) & 0xFF
-        ,(*id_msb >> 0) & 0xFF
-        ,(*id_lsb >> 24)& 0xFF
-        ,(*id_lsb >> 16)& 0xFF
-        ,(*id_lsb >> 8) & 0xFF
-        ,(*id_lsb >> 0) & 0xFF
+        ,(*id_word0 >> 8) & 0xFF
+        ,(*id_word0 >> 0) & 0xFF
+        ,(*id_word3 >> 24)& 0xFF
+        ,(*id_word3 >> 16)& 0xFF
+        ,(*id_word3 >> 8) & 0xFF
+        ,(*id_word3 >> 0) & 0xFF
         );
 
 }

@@ -9,6 +9,7 @@
 
 
 #include "ei_device_wio_terminal.h"
+#include "ei_sensors_utils.h"
 #include "sensor_aq.h"
 
 #include <Dps310.h>
@@ -29,7 +30,10 @@ float pressure;
 
 bool ei_dps310_init(void)
 {
+    if(!i2c_scanner(0x77))
+        return false;
     Dps310PressureSensor.begin(Wire);
+    return true;
 }
 
 bool ei_dps310_read_data(sampler_callback callback)
@@ -63,6 +67,12 @@ bool ei_dps310_setup_data_sampling(void)
         {{"Temp", "C"}, {"Pressure", "kPa"},
          /*{ "gyrX", "dps" }, { "gyrY", "dps" }, { "gyrZ", "dps" } */},
     };
+
+    if (!ei_dps310_init())
+    {
+        ei_printf("Sensor initialization failed, Please check that your device is connected properly!\n\r");
+        return false;
+    }
 
     ei_sampler_start_sampling(&ei_dps310_read_data,&payload, SIZEOF_N_PRESSURE_SAMPLED);
 }
