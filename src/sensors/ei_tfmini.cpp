@@ -25,8 +25,15 @@ extern EI_CONFIG_ERROR ei_config_set_sample_interval(float interval);
 static float distance_data[N_DISTANCE_SAMPLED] = {0};
 
 bool ei_tfmini_init(void)
-{
+{   
+    int timeout = 0;
     SeeedTFLidar.begin(&Serial1,115200);
+    while (!Serial1.available()) {
+        timeout++;
+        if (timeout > 200)
+            return false;
+    }
+    return true;
 }
 
 bool ei_tfmini_read_data(sampler_callback callback)
@@ -61,6 +68,13 @@ bool ei_tfmini_setup_data_sampling(void)
         {{"Distance", "cm"}, {"Strength", "na"},
          /*{ "gyrX", "dps" }, { "gyrY", "dps" }, { "gyrZ", "dps" } */},
     };
+
+    if (!ei_tfmini_init())
+    {
+        ei_printf("Sensor initialization failed, Please check that your device is connected properly!\n\r");
+        return false;
+    }
+
 
     ei_sampler_start_sampling(&ei_tfmini_read_data,&payload, SIZEOF_N_PRESSURE_SAMPLED);
 }
