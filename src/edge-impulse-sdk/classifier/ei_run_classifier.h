@@ -39,13 +39,17 @@
 #include "utensor-model/trained.hpp"
 #include "utensor-model/trained_weight.hpp"            // keep the weights in ROM for now, we have plenty of internal flash
 #elif (EI_CLASSIFIER_INFERENCING_ENGINE == EI_CLASSIFIER_TFLITE)
-#include "edge-impulse-sdk/tensorflow/lite/micro/kernels/all_ops_resolver.h"
+#include "edge-impulse-sdk/tensorflow/lite/micro/all_ops_resolver.h"
 #include "edge-impulse-sdk/tensorflow/lite/micro/micro_error_reporter.h"
 #include "edge-impulse-sdk/tensorflow/lite/micro/micro_interpreter.h"
 #include "edge-impulse-sdk/tensorflow/lite/schema/schema_generated.h"
 #include "edge-impulse-sdk/tensorflow/lite/version.h"
+#include "edge-impulse-sdk/classifier/ei_aligned_malloc.h"
 
 #include "tflite-model/tflite-trained.h"
+#if defined(EI_CLASSIFIER_HAS_TFLITE_OPS_RESOLVER) && EI_CLASSIFIER_HAS_TFLITE_OPS_RESOLVER == 1
+#include "tflite-model/tflite-resolver.h"
+#endif // EI_CLASSIFIER_HAS_TFLITE_OPS_RESOLVER
 
 static tflite::MicroErrorReporter micro_error_reporter;
 static tflite::ErrorReporter* error_reporter = &micro_error_reporter;
@@ -92,7 +96,8 @@ extern "C" EI_IMPULSE_ERROR run_classifier(
     // if (debug) {
     //     ei_printf("Input data: ");
     //     for (size_t ix = 0; ix < raw_features_size; ix++) {
-    //         ei_printf("%f ", raw_features[ix]);
+    //         ei_printf_float(raw_features[ix]);
+    //         ei_printf(" ");
     //     }
     //     ei_printf("\n");
     // }
@@ -131,7 +136,8 @@ extern "C" EI_IMPULSE_ERROR run_classifier(
     if (debug) {
         ei_printf("Features (%d ms.): ", result->timing.dsp);
         for (size_t ix = 0; ix < features_matrix.cols; ix++) {
-            ei_printf("%f ", features_matrix.buffer[ix]);
+            ei_printf_float(features_matrix.buffer[ix]);
+            ei_printf(" ");
         }
         ei_printf("\n");
     }
@@ -173,7 +179,9 @@ extern "C" EI_IMPULSE_ERROR run_classifier(
 
         for (uint32_t ix = 0; ix < output_neurons; ix++) {
             if (debug) {
-                ei_printf("%s:\t%f\n", ei_classifier_inferencing_categories[ix], *(ptr_pred + ix));
+                ei_printf("%s:\t", ei_classifier_inferencing_categories[ix]);
+                ei_printf_float(*(ptr_pred + ix));
+                ei_printf("\n");
             }
             result->classification[ix].label = ei_classifier_inferencing_categories[ix];
             result->classification[ix].value = *(ptr_pred + ix);
@@ -182,9 +190,8 @@ extern "C" EI_IMPULSE_ERROR run_classifier(
 #elif (EI_CLASSIFIER_INFERENCING_ENGINE == EI_CLASSIFIER_TFLITE)
     {
         // Create an area of memory to use for input, output, and intermediate arrays.
-        // Finding the minimum value for your model may require some trial and error.
-        uint8_t *tensor_arena = (uint8_t*)malloc(EI_CLASSIFIER_TFLITE_ARENA_SIZE);
-        if (!tensor_arena) {
+        uint8_t *tensor_arena = (uint8_t*)ei_aligned_malloc(16, EI_CLASSIFIER_TFLITE_ARENA_SIZE);
+        if (tensor_arena == NULL) {
             ei_printf("Failed to allocate TFLite arena (%d bytes)\n", EI_CLASSIFIER_TFLITE_ARENA_SIZE);
             return EI_IMPULSE_TFLITE_ARENA_ALLOC_FAILED;
         }
@@ -208,14 +215,18 @@ extern "C" EI_IMPULSE_ERROR run_classifier(
                     "Model provided is schema version %d not equal "
                     "to supported version %d.",
                     model->version(), TFLITE_SCHEMA_VERSION);
-                free(tensor_arena);
+                ei_aligned_free(tensor_arena);
                 return EI_IMPULSE_TFLITE_ERROR;
             }
 
             tflite_first_run = false;
         }
 
-        tflite::ops::micro::AllOpsResolver resolver;
+#ifdef EI_TFLITE_RESOLVER
+        EI_TFLITE_RESOLVER
+#else
+        tflite::AllOpsResolver resolver;
+#endif
 
         // Build an interpreter to run the model with.
         tflite::MicroInterpreter interpreter(
@@ -225,7 +236,7 @@ extern "C" EI_IMPULSE_ERROR run_classifier(
         TfLiteStatus allocate_status = interpreter.AllocateTensors();
         if (allocate_status != kTfLiteOk) {
             error_reporter->Report("AllocateTensors() failed");
-            free(tensor_arena);
+            ei_aligned_free(tensor_arena);
             return EI_IMPULSE_TFLITE_ERROR;
         }
 
@@ -245,7 +256,7 @@ extern "C" EI_IMPULSE_ERROR run_classifier(
         TfLiteStatus invoke_status = interpreter.Invoke();
         if (invoke_status != kTfLiteOk) {
             error_reporter->Report("Invoke failed (%d)\n", invoke_status);
-            free(tensor_arena);
+            ei_aligned_free(tensor_arena);
             return EI_IMPULSE_TFLITE_ERROR;
         }
 
@@ -259,13 +270,15 @@ extern "C" EI_IMPULSE_ERROR run_classifier(
         }
         for (uint32_t ix = 0; ix < EI_CLASSIFIER_LABEL_COUNT; ix++) {
             if (debug) {
-                ei_printf("%s:\t%f\n", ei_classifier_inferencing_categories[ix], output->data.f[ix]);
+                ei_printf("%s:\t", ei_classifier_inferencing_categories[ix]);
+                ei_printf_float(output->data.f[ix]);
+                ei_printf("\n");
             }
             result->classification[ix].label = ei_classifier_inferencing_categories[ix];
             result->classification[ix].value = output->data.f[ix];
         }
 
-        free(tensor_arena);
+        ei_aligned_free(tensor_arena);
 
         if (ei_run_impulse_check_canceled() == EI_IMPULSE_CANCELED) {
             return EI_IMPULSE_CANCELED;
@@ -349,7 +362,9 @@ extern "C" EI_IMPULSE_ERROR run_classifier(
     }
     for (uint32_t ix = 0; ix < EI_CLASSIFIER_LABEL_COUNT; ix++) {
         if (debug) {
-            ei_printf("%s:\t%f\n", ei_classifier_inferencing_categories[ix], out_data[ix]);
+            ei_printf("%s:\t", ei_classifier_inferencing_categories[ix]);
+            ei_printf_float(out_data[ix]);
+            ei_printf("\n");
         }
         result->classification[ix].label = ei_classifier_inferencing_categories[ix];
         result->classification[ix].value = out_data[ix];
@@ -374,7 +389,9 @@ extern "C" EI_IMPULSE_ERROR run_classifier(
         uint64_t anomaly_end_ms = ei_read_timer_ms();
 
         if (debug) {
-            ei_printf("Anomaly score (time: %d ms.): %f\n", static_cast<int>(anomaly_end_ms - anomaly_start_ms), anomaly);
+            ei_printf("Anomaly score (time: %d ms.): ", static_cast<int>(anomaly_end_ms - anomaly_start_ms));
+            ei_printf_float(anomaly);
+            ei_printf("\n");
         }
 
         result->timing.anomaly = anomaly_end_ms - anomaly_start_ms;
