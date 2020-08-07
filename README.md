@@ -24,7 +24,11 @@ git clone https://github.com/Seeed-Studio/Seeed_Arduino_MultiGas
 git clone https://github.com/Seeed-Studio/Seeed_Arduino_SFUD
 git clone https://github.com/Seeed-Studio/Grove_BME280
 git clone https://github.com/Seeed-Studio/Seeed_Arduino_DPS310
-git clone https://github.com/Seeed-Studio/Seeed_Arduino_edgeimpulse 
+git clone https://github.com/Seeed-Studio/Seeed_SCD30
+git clone https://github.com/Seeed-Studio/Grove_6Axis_Accelerometer_And_Gyroscope_BMI088
+git clone https://github.com/Seeed-Studio/Seeed_Arduino_UltrasonicRanger
+git clone https://github.com/Seeed-Studio/Seeed_Arduino_TFlidar
+git clone https://github.com/Seeed-Studio/Seeed_Arduino_edgeimpulse
 cd  Seeed_Arduino_edgeimpulse 
 ./arduino-build.sh --build
 ```

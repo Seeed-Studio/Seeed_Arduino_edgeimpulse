@@ -179,43 +179,43 @@ bool EiDeviceWioTerminal::get_sensor_list(const ei_device_sensor_t **sensor_list
     sensors[ACCELEROMETER].frequencies[0] = 62.5f;
     sensors[ACCELEROMETER].frequencies[1] = 100.0f;
 
-    sensors[GAS].name = "External multichannel gas";
+    sensors[GAS].name = "External multichannel gas(Grove-multichannel gas v2)";
     sensors[GAS].start_sampling_cb = &ei_mutlgas_setup_data_sampling;
     sensors[GAS].max_sample_length_s = available_bytes / (100 * SIZEOF_N_GAS_SAMPLED);
     sensors[GAS].frequencies[0] = 100.0f;
 
-    sensors[BME280].name = "External temperature sensor";
+    sensors[BME280].name = "External temperature sensor(Grove-BME280)";
     sensors[BME280].start_sampling_cb = &ei_bme280_setup_data_sampling;
     sensors[BME280].max_sample_length_s = available_bytes / (100 * SIZEOF_N_TEMP_SAMPLED);
     sensors[BME280].frequencies[0] = 62.5f;
     sensors[BME280].frequencies[1] = 100.0f;
 
-    sensors[DPS310].name = "External pressure sensor";
+    sensors[DPS310].name = "External pressure sensor(Grove-DPS310)";
     sensors[DPS310].start_sampling_cb = &ei_dps310_setup_data_sampling;
     sensors[DPS310].max_sample_length_s = available_bytes / (100 * SIZEOF_N_PRESSURE_SAMPLED);
     sensors[DPS310].frequencies[0] = 100.0f;
     sensors[DPS310].frequencies[1] = 200.0f;
 
-    sensors[TFMINI].name = "External distance sensor";
+    sensors[TFMINI].name = "External distance sensor(Grove-TFmini)";
     sensors[TFMINI].start_sampling_cb = &ei_tfmini_setup_data_sampling;
     sensors[TFMINI].max_sample_length_s = available_bytes / (100 * SIZEOF_N_DISTANCE_SAMPLED);
     sensors[TFMINI].frequencies[0] = 62.5f;
     sensors[TFMINI].frequencies[1] = 100.0f;
 
-    sensors[BMI088].name = "External 6-axis accelerator";
+    sensors[BMI088].name = "External 6-axis accelerator(Grove-BMI088)";
     sensors[BMI088].start_sampling_cb = &ei_bmi088_setup_data_sampling;
     sensors[BMI088].max_sample_length_s = available_bytes / (100 * SIZEOF_N_GYRO_SAMPLED);
     sensors[BMI088].frequencies[0] = 62.5f;
     sensors[BMI088].frequencies[1] = 100.0f;
     sensors[BMI088].frequencies[2] = 200.0f;
 
-    sensors[ULTRASONIC].name = "External ultrasonic sensor";
+    sensors[ULTRASONIC].name = "External ultrasonic sensor(Grove-ultrasonic sensor)";
     sensors[ULTRASONIC].start_sampling_cb = &ei_ultrasonic_setup_data_sampling;
     sensors[ULTRASONIC].max_sample_length_s = available_bytes / (100 * SIZEOF_N_ULTRASONIC_SAMPLED);
     sensors[ULTRASONIC].frequencies[0] = 62.5f;
     sensors[ULTRASONIC].frequencies[1] = 100.0f;
 
-    sensors[SCD30].name = "External CO2+Temp sensor(SCD30)";
+    sensors[SCD30].name = "External CO2+Temp sensor(Grove-SCD30)";
     sensors[SCD30].start_sampling_cb = &ei_scd30_setup_data_sampling;
     sensors[SCD30].max_sample_length_s = available_bytes / (100 * SIZEOF_N_SCD30_SAMPLED);
     sensors[SCD30].frequencies[0] = 62.5f;
