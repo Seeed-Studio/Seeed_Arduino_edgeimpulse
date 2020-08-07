@@ -29,7 +29,7 @@ FLAGS+=" -D__STATIC_FORCEINLINE=__STATIC_INLINE"
 if [ "$COMMAND" = "--build" ];
 then
 	echo "Building $PROJECT"
-	arduino-cli compile --fqbn  $BOARD --verbose   --build-properties build.project_flags="$INCLUDE $FLAGS" $PROJECT &
+	arduino-cli compile --fqbn  $BOARD --build-properties build.project_flags="$INCLUDE $FLAGS" $PROJECT &
 	pid=$! # Process Id of the previous running command
 	while kill -0 $pid 2>/dev/null
 	do
