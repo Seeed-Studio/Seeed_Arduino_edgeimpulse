@@ -15,6 +15,7 @@ The arduino-cli tool is used to build and upload the Edge Impulse firmware to th
 ```shell
 
 git submodule update --init --recursive -j 8
+./arduino-cli config init
 ./arduino-cli config set directories.user ./user #that will set your user directory for Arduino CLI to user folder in current directory - change back after you finish building 
 ./arduino-build.sh --build
 arduino-cli upload --fqbn=Seeeduino:samd:seeed_wio_terminal -p /dev/ttyACM0 -i build/*.bin
