@@ -1,0 +1,36 @@
+[submodule "user/libraries/Seeed_Arduino_FreeRTOS"]
+	path = user/libraries/Seeed_Arduino_FreeRTOS
+	url = https://github.com/Seeed-Studio/Seeed_Arduino_FreeRTOS
+[submodule "user/libraries/Seeed_Arduino_ooFreeRTOS"]
+	path = user/libraries/Seeed_Arduino_ooFreeRTOS
+	url = https://github.com/Seeed-Studio/Seeed_Arduino_ooFreeRTOS
+[submodule "user/libraries/Seeed_Arduino_LIS3DHTR"]
+	path = user/libraries/Seeed_Arduino_LIS3DHTR
+	url = https://github.com/Seeed-Studio/Seeed_Arduino_LIS3DHTR
+[submodule "user/libraries/Seeed_Arduino_mbedtls"]
+	path = user/libraries/Seeed_Arduino_mbedtls
+	url = https://github.com/Seeed-Studio/Seeed_Arduino_mbedtls
+[submodule "user/libraries/Seeed_Arduino_MultiGas"]
+	path = user/libraries/Seeed_Arduino_MultiGas
+	url = https://github.com/Seeed-Studio/Seeed_Arduino_MultiGas
+[submodule "user/libraries/Seeed_Arduino_SFUD"]
+	path = user/libraries/Seeed_Arduino_SFUD
+	url = https://github.com/Seeed-Studio/Seeed_Arduino_SFUD
+[submodule "user/libraries/Grove_BME280"]
+	path = user/libraries/Grove_BME280
+	url = https://github.com/Seeed-Studio/Grove_BME280
+[submodule "user/libraries/Seeed_Arduino_DPS310"]
+	path = user/libraries/Seeed_Arduino_DPS310
+	url = https://github.com/Seeed-Studio/Seeed_Arduino_DPS310
+[submodule "user/libraries/Seeed_SCD30"]
+	path = user/libraries/Seeed_SCD30
+	url = https://github.com/Seeed-Studio/Seeed_SCD30
+[submodule "user/libraries/Grove_6Axis_Accelerometer_And_Gyroscope_BMI088"]
+	path = user/libraries/Grove_6Axis_Accelerometer_And_Gyroscope_BMI088
+	url = https://github.com/Seeed-Studio/Grove_6Axis_Accelerometer_And_Gyroscope_BMI088
+[submodule "user/libraries/Seeed_Arduino_UltrasonicRanger"]
+	path = user/libraries/Seeed_Arduino_UltrasonicRanger
+	url = https://github.com/Seeed-Studio/Seeed_Arduino_UltrasonicRanger
+[submodule "user/libraries/Seeed_Arduino_TFlidar"]
+	path = user/libraries/Seeed_Arduino_TFlidar
+	url = https://github.com/Seeed-Studio/Seeed_Arduino_TFlidar

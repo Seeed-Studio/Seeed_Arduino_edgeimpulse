@@ -15,9 +15,7 @@ INCLUDE+=" -I ./src/QCBOR/inc"
 INCLUDE+=" -I ./src/QCBOR/src"
 INCLUDE+=" -I ./src/cm_backtrace"
 INCLUDE+=" -I ./src/mbedtls_hmac_sha256_sw/"
-
 INCLUDE+=" -I ./src/cm_backtrace"
-
 
 FLAGS+=" -O3"
 FLAGS+=" -g3"
@@ -25,11 +23,10 @@ FLAGS+=" -DEI_SENSOR_AQ_STREAM=int"
 FLAGS+=" -DEIDSP_QUANTIZE_FILTERBANK=0"
 FLAGS+=" -D__STATIC_FORCEINLINE=__STATIC_INLINE"
 
-
 if [ "$COMMAND" = "--build" ];
 then
 	echo "Building $PROJECT"
-	arduino-cli compile --fqbn  $BOARD --build-properties build.project_flags="$INCLUDE $FLAGS" $PROJECT &
+	arduino-cli compile --fqbn  $BOARD --output-dir ./build --build-properties build.project_flags="$INCLUDE $FLAGS" $PROJECT &
 	pid=$! # Process Id of the previous running command
 	while kill -0 $pid 2>/dev/null
 	do
@@ -45,12 +42,12 @@ then
 	fi
 elif [ "$COMMAND" = "--flash" ];
 then
-	arduino-cli upload -p $(arduino-cli board list | grep Arduino | cut -d ' ' -f1) --fqbn $BOARD -i *.bin
+	arduino-cli upload --fqbn=$BOARD -p $(arduino-cli board list | grep Arduino | cut -d ' ' -f1)  -i ./build/*.bin
 elif [ "$COMMAND" = "--all" ];
 then
 	arduino-cli compile --fqbn  $BOARD $PROJECT
 	status=$?
-	[ $status -eq 0 ] && arduino-cli upload -p $(arduino-cli board list | grep Arduino | cut -d ' ' -f1) --fqbn $BOARD -i *.bin
+	[ $status -eq 0 ] && arduino-cli upload -p $(arduino-cli board list | grep Arduino | cut -d ' ' -f1) --fqbn $BOARD -i ./build/*.bin
 else
 	echo "Nothing to do for target"
 fi

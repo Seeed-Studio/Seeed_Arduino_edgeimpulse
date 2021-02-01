@@ -10,25 +10,13 @@ The arduino-cli tool is used to build and upload the Edge Impulse firmware to th
 * [Arduino CLI](https://arduino.github.io/arduino-cli/installation/).
 
 
-## Building the application
-The Edge Impulse firmware depends on libraries and the samd core for Arduino. Running the following script will install all the dependencies for you:
+## Building and flashing the firmware
 
 ```shell
 
-cd ~/Arduino/libraries/
-git clone https://github.com/Seeed-Studio/Seeed_Arduino_FreeRTOS
-git clone https://github.com/Seeed-Studio/Seeed_Arduino_ooFreeRTOS
-git clone https://github.com/Seeed-Studio/Seeed_Arduino_LIS3DHTR
-git clone https://github.com/Seeed-Studio/Seeed_Arduino_mbedtls -b edge-impulse
-git clone https://github.com/Seeed-Studio/Seeed_Arduino_MultiGas
-git clone https://github.com/Seeed-Studio/Seeed_Arduino_SFUD
-git clone https://github.com/Seeed-Studio/Grove_BME280
-git clone https://github.com/Seeed-Studio/Seeed_Arduino_DPS310
-git clone https://github.com/Seeed-Studio/Seeed_SCD30
-git clone https://github.com/Seeed-Studio/Grove_6Axis_Accelerometer_And_Gyroscope_BMI088
-git clone https://github.com/Seeed-Studio/Seeed_Arduino_UltrasonicRanger
-git clone https://github.com/Seeed-Studio/Seeed_Arduino_TFlidar
-git clone https://github.com/Seeed-Studio/Seeed_Arduino_edgeimpulse
-cd  Seeed_Arduino_edgeimpulse 
+git submodule update --init --recursive -j 8
+./arduino-cli config init
+./arduino-cli config set directories.user ./user #that will set your user directory for Arduino CLI to user folder in current directory - change back after you finish building 
 ./arduino-build.sh --build
+arduino-cli upload --fqbn=Seeeduino:samd:seeed_wio_terminal -p /dev/ttyACM0 -i build/*.bin
 ```
