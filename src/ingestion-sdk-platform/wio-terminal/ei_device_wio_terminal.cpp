@@ -48,7 +48,8 @@ typedef enum
     TFMINI,
     BMI088,
     ULTRASONIC,
-    SCD30
+    SCD30,
+    MICROPHONE
 
 }used_sensors_t;
 
@@ -214,6 +215,11 @@ bool EiDeviceWioTerminal::get_sensor_list(const ei_device_sensor_t **sensor_list
     sensors[ULTRASONIC].max_sample_length_s = available_bytes / (100 * SIZEOF_N_ULTRASONIC_SAMPLED);
     sensors[ULTRASONIC].frequencies[0] = 62.5f;
     sensors[ULTRASONIC].frequencies[1] = 100.0f;
+
+    sensors[MICROPHONE].name = "Built-in microphone";
+    sensors[MICROPHONE].start_sampling_cb = &ei_microphone_setup_data_sampling;
+    sensors[MICROPHONE].max_sample_length_s = 5;
+    sensors[MICROPHONE].frequencies[0] = 8000.0f;
 
     sensors[SCD30].name = "External CO2+Temp sensor(Grove-SCD30)";
     sensors[SCD30].start_sampling_cb = &ei_scd30_setup_data_sampling;
