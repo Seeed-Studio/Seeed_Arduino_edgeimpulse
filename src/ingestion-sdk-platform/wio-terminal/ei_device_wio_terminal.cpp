@@ -185,7 +185,7 @@ bool EiDeviceWioTerminal::get_sensor_list(const ei_device_sensor_t **sensor_list
     sensors[GAS].max_sample_length_s = available_bytes / (100 * SIZEOF_N_GAS_SAMPLED);
     sensors[GAS].frequencies[0] = 100.0f;
 
-    sensors[BME280].name = "External temperature sensor(Grove-BME280)";
+    sensors[BME280].name = "External temperature&humidity&pressure sensor(Grove-BME280)";
     sensors[BME280].start_sampling_cb = &ei_bme280_setup_data_sampling;
     sensors[BME280].max_sample_length_s = available_bytes / (100 * SIZEOF_N_TEMP_SAMPLED);
     sensors[BME280].frequencies[0] = 62.5f;
@@ -203,7 +203,7 @@ bool EiDeviceWioTerminal::get_sensor_list(const ei_device_sensor_t **sensor_list
     sensors[TFMINI].frequencies[0] = 62.5f;
     sensors[TFMINI].frequencies[1] = 100.0f;
 
-    sensors[BMI088].name = "External 6-axis accelerator(Grove-BMI088)";
+    sensors[BMI088].name = "External 6-axis accelerometer(Grove-BMI088)";
     sensors[BMI088].start_sampling_cb = &ei_bmi088_setup_data_sampling;
     sensors[BMI088].max_sample_length_s = available_bytes / (100 * SIZEOF_N_GYRO_SAMPLED);
     sensors[BMI088].frequencies[0] = 62.5f;
@@ -219,7 +219,7 @@ bool EiDeviceWioTerminal::get_sensor_list(const ei_device_sensor_t **sensor_list
     sensors[MICROPHONE].name = "Built-in microphone";
     sensors[MICROPHONE].start_sampling_cb = &ei_microphone_setup_data_sampling;
     sensors[MICROPHONE].max_sample_length_s = 5;
-    sensors[MICROPHONE].frequencies[0] = 8000.0f;
+    sensors[MICROPHONE].frequencies[0] = 16000.0f;
 
     sensors[SCD30].name = "External CO2+Temp sensor(Grove-SCD30)";
     sensors[SCD30].start_sampling_cb = &ei_scd30_setup_data_sampling;
