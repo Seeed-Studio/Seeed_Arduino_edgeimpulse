@@ -42,16 +42,17 @@
 typedef enum
 {
     ACCELEROMETER = 0,
+    MICROPHONE,
+    LIGHT,
     GAS,
     BME280,
     DPS310,
     TFMINI,
     BMI088,
     ULTRASONIC,
-    SCD30,
-    MICROPHONE
+    SCD30
 
-}used_sensors_t;
+} used_sensors_t;
 
 #define EDGE_STRINGIZE_(x) #x
 #define EDGE_STRINGIZE(x) EDGE_STRINGIZE_(x)
@@ -180,6 +181,17 @@ bool EiDeviceWioTerminal::get_sensor_list(const ei_device_sensor_t **sensor_list
     sensors[ACCELEROMETER].frequencies[0] = 62.5f;
     sensors[ACCELEROMETER].frequencies[1] = 100.0f;
 
+    sensors[MICROPHONE].name = "Built-in microphone";
+    sensors[MICROPHONE].start_sampling_cb = &ei_microphone_setup_data_sampling;
+    sensors[MICROPHONE].max_sample_length_s = 5;
+    sensors[MICROPHONE].frequencies[0] = 16000.0f;    
+
+    sensors[LIGHT].name = "Built-in light sensor";
+    sensors[LIGHT].start_sampling_cb = &ei_light_setup_data_sampling;
+    sensors[LIGHT].max_sample_length_s = available_bytes / (100 * SIZEOF_N_AXIS_SAMPLED);
+    sensors[LIGHT].frequencies[0] = 62.5f;
+    sensors[LIGHT].frequencies[1] = 100.0f;
+
     sensors[GAS].name = "External multichannel gas(Grove-multichannel gas v2)";
     sensors[GAS].start_sampling_cb = &ei_mutlgas_setup_data_sampling;
     sensors[GAS].max_sample_length_s = available_bytes / (100 * SIZEOF_N_GAS_SAMPLED);
@@ -215,11 +227,6 @@ bool EiDeviceWioTerminal::get_sensor_list(const ei_device_sensor_t **sensor_list
     sensors[ULTRASONIC].max_sample_length_s = available_bytes / (100 * SIZEOF_N_ULTRASONIC_SAMPLED);
     sensors[ULTRASONIC].frequencies[0] = 62.5f;
     sensors[ULTRASONIC].frequencies[1] = 100.0f;
-
-    sensors[MICROPHONE].name = "Built-in microphone";
-    sensors[MICROPHONE].start_sampling_cb = &ei_microphone_setup_data_sampling;
-    sensors[MICROPHONE].max_sample_length_s = 5;
-    sensors[MICROPHONE].frequencies[0] = 16000.0f;
 
     sensors[SCD30].name = "External CO2+Temp sensor(Grove-SCD30)";
     sensors[SCD30].start_sampling_cb = &ei_scd30_setup_data_sampling;

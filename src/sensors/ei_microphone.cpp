@@ -40,7 +40,6 @@ static uint32_t headerOffset = 0;
 
 static unsigned char ei_mic_ctx_buffer[1024];
 static uint8_t temp_buffer[4096];
-//static int16_t temp_buf[4096*3];
 static sensor_aq_signing_ctx_t ei_mic_signing_ctx;
 static sensor_aq_mbedtls_hs256_ctx_t ei_mic_hs_ctx;
 
