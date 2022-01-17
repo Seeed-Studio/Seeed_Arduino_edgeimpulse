@@ -22,6 +22,7 @@
 
 #ifndef _EI_ARDUINO_WIO_TERMINAL_SETUP_H_
 #define _EI_ARDUINO_WIO_TERMINAL_SETUP_H_
+#include "Arduino.h"
 #include "Seeed_Arduino_FreeRTOS.h"
 #include "Seeed_Arduino_ooFreeRTOS.h"
 #include "Seeed_mbedtls.h"
